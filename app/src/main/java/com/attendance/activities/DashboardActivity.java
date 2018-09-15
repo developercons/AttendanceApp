@@ -12,5 +12,6 @@ public class DashboardActivity extends NavigationActivity {
 		super.onCreate(savedInstanceState);
 		View view = getLayoutInflater().inflate(R.layout.activity_dashboard, clParent, false);
 		clParent.addView(view);
+		//this is dashboard
 	}
 }
