@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="60dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:padding="5dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="textStart"
+        android:textSize="16sp"
+        android:text="@string/dashboard"
+        android:id="@+id/tvDashboard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:padding="5dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="textStart"
+        android:textSize="16sp"
+        android:text="@string/add_details"
+        android:id="@+id/tvAddDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:padding="5dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="textStart"
+        android:textSize="16sp"
+        android:text="@string/view_details"
+        android:id="@+id/tvViewDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:padding="5dp"
+        android:layout_marginStart="10dp"
+        android:textColor="@color/black"
+        android:textAlignment="textStart"
+        android:textSize="16sp"
+        android:text="@string/view_reports"
+        android:id="@+id/tvViewReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_marginBottom="50dp"
+            android:layout_centerInParent="true"
+            android:textSize="12sp"
+            android:text="@string/logout"
+            android:layout_width="100dp"
+            android:layout_height="40dp" />
+    </RelativeLayout>
+
+</LinearLayout>
