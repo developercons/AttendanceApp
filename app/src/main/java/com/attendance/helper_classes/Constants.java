@@ -4,4 +4,6 @@ public class Constants {
 
     public final static String EMAIL_PATTERN = "";
     public final static String PHONE_PATTERN = "";
+    public final static String NAME = "";
+
 }
