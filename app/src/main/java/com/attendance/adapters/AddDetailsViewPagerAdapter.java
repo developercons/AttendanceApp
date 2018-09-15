@@ -26,9 +26,9 @@ public class AddDetailsViewPagerAdapter extends FragmentStatePagerAdapter{
 		return mFragmentList.size();
 	}
 
-	public void addFragment( Fragment fm, String tittle) {
+	public void addFragment( Fragment fm, String title) {
 		mFragmentList.add(fm);
-		mFragmentTittle.add(tittle);
+		mFragmentTittle.add(title);
 	}
 
 	@Nullable

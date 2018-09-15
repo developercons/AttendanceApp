@@ -29,4 +29,26 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- TODO: Add Fragments Tabs Name -->
+    <string name="add_teacher">Add Teacher</string>
+    <string name="add_class">Add Class</string>
+    <string name="add_student">Add Student</string>
+
+    <!-- TODO: Add Class Strings-->
+    <string name="course_name">Course Name</string>
+    <string name="semester">Semester</string>
+    <string name="teacher_email">Teacher Email</string>
+    <string name="teacher_name">Teacher Name</string>
+    <string name="submit_btn_txt">Submit</string>
+
+    <!-- TODO: Add Teacher Strings-->
+    <string name="name">Name</string>
+    <string name="contact">Contact No.</string>
+    <string name="email">Email ID</string>
+    <string name="password">Password</string>
+    <string name="qualification">Highest Qualification</string>
+
+    <!-- TODO: Add Student Strings-->
+    <string name="class_txt">Class</string>
+
 </resources>
