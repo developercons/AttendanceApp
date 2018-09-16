@@ -3,6 +3,7 @@ package com.attendance.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.constraint.ConstraintLayout;
+import android.support.constraint.Constraints;
 import android.view.View;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.attendance.R;
+import com.attendance.helper_classes.ConstantsString;
 
 public class NavigationActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -31,6 +33,36 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
 				this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
 		drawer.addDrawerListener(toggle);
 		toggle.syncState();
+
+		if ( ConstantsString.qualificationList.isEmpty() ) {
+			ConstantsString.qualificationList.add("BSC-IT");
+			ConstantsString.qualificationList.add("BCA");
+			ConstantsString.qualificationList.add("MSC-IT");
+			ConstantsString.qualificationList.add("B-Tech");
+			ConstantsString.qualificationList.add("BBA");
+			ConstantsString.qualificationList.add("B-COM");
+		}
+
+		if ( ConstantsString.semesterList.isEmpty() ) {
+			ConstantsString.semesterList.add("1");
+			ConstantsString.semesterList.add("2");
+			ConstantsString.semesterList.add("3");
+			ConstantsString.semesterList.add("4");
+			ConstantsString.semesterList.add("5");
+			ConstantsString.semesterList.add("6");
+			ConstantsString.semesterList.add("7");
+			ConstantsString.semesterList.add("8");
+		}
+
+		if ( ConstantsString.coursesList.isEmpty() ) {
+			ConstantsString.coursesList.add("2D-Design");
+			ConstantsString.coursesList.add("3D-Design");
+			ConstantsString.coursesList.add("Data Analyst");
+			ConstantsString.coursesList.add("Data Science");
+			ConstantsString.coursesList.add("Big Data");
+			ConstantsString.coursesList.add("IOT");
+			ConstantsString.coursesList.add("AI");
+		}
 
 	}
 

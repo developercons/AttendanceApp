@@ -1,6 +1,7 @@
 package com.attendance.fragments;
 
 import android.graphics.Color;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -16,13 +17,14 @@ import android.widget.Button;
 
 import com.attendance.R;
 import com.attendance.activities.AddDetailsActivity;
+import com.attendance.adapters.CustomAdapter;
 import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
 import com.attendance.data_models.Teacher;
 import com.attendance.database.MyDBHelper;
-import com.attendance.helper_classes.Constants;
+import com.attendance.helper_classes.ConstantsString;
 
 import java.util.ArrayList;
 
@@ -41,16 +43,17 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
 	MyDBHelper dbHelper;
 
 	boolean flag = false;
+	private AddDetailsActivity activity;
 
 	public static AddClassFragment newInstance() {
 		return new AddClassFragment();
 	}
 
-    public class ClassData {
-        public String _courseName;
-        public String _semester;
-        public String _teacherEmail;
-        public String _teacherName;
+    public class AddClassData {
+        public String courseName;
+        public String semester;
+        public String teacherEmail;
+        public String teacherName;
     }
 
     @Override
@@ -79,25 +82,22 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
 		btn_submit.setOnClickListener(this);
 
         textChangeListeners();
-
-        ArrayAdapter _adapterCourses = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                ((AddDetailsActivity) getActivity()).coursesList);
-        ArrayAdapter _adapterSemester = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                ((AddDetailsActivity) getActivity()).semesterList);
+		CustomAdapter coursesAdapter = new CustomAdapter(activity, sp_courseName, ConstantsString.coursesList);
+		CustomAdapter semesterAdapter = new CustomAdapter(activity, sp_courseName, ConstantsString.semesterList);
 
         //set Adapters
-        sp_courseName.setAdapter(_adapterCourses);
-        sp_semester.setAdapter(_adapterSemester);
+        sp_courseName.setAdapter(coursesAdapter);
+        sp_semester.setAdapter(semesterAdapter);
 
-        ac_teacherEmail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String email = ac_teacherEmail.getText().toString().trim();
-                String name = teacherAllDataList.get(teacherEmailList.indexOf(email)).name;
-                et_teacherName.setText(name);
-                et_teacherName.setTextColor(Color.BLACK);
-            }
+        ac_teacherEmail.setOnItemClickListener((parent, view1, position, id) -> {
+            String email = ac_teacherEmail.getText().toString().trim();
+            String name = teacherAllDataList.get(teacherEmailList.indexOf(email)).name;
+            et_teacherName.setText(name);
+            et_teacherName.setTextColor(Color.BLACK);
         });
+		//set Adapters
+        sp_courseName.setAdapter(coursesAdapter);
+        sp_semester.setAdapter(semesterAdapter);
 		return view;
 	}
 
@@ -109,19 +109,19 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
     }
 
     private void initViews(View view) {
-	    til_courseName = (CustomTextInputLayout) view.findViewById(R.id.til_courseName);
-        til_semester = (CustomTextInputLayout) view.findViewById(R.id.til_semester);
-        til_teacherEmail = (CustomTextInputLayout) view.findViewById(R.id.til_teacherEmail);
-        til_teacherName = (CustomTextInputLayout) view.findViewById(R.id.til_teacherName);
+	    til_courseName = view.findViewById(R.id.til_courseName);
+        til_semester = view.findViewById(R.id.til_semester);
+        til_teacherEmail = view.findViewById(R.id.til_teacherEmail);
+        til_teacherName = view.findViewById(R.id.til_teacherName);
 
-        et_teacherName = (CustomInputEditText) view.findViewById(R.id.et_teacherName);
+        et_teacherName = view.findViewById(R.id.et_teacherName);
 
-        sp_courseName = (CustomSpinner) view.findViewById(R.id.sp_courseName);
-        sp_semester = (CustomSpinner) view.findViewById(R.id.sp_semester);
+        sp_courseName = view.findViewById(R.id.sp_courseName);
+        sp_semester = view.findViewById(R.id.sp_semester);
 
-        ac_teacherEmail = (CustomAutoCompleteTextView) view.findViewById(R.id.ac_teacherEmail);
+        ac_teacherEmail = view.findViewById(R.id.ac_teacherEmail);
 
-        btn_submit = (Button) view.findViewById(R.id.btn_submit);
+        btn_submit = view.findViewById(R.id.btn_submit);
     }
 
     TextWatcher textWatcher = new TextWatcher() {
@@ -172,7 +172,7 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
             til_semester.setErrorMessage();
         }
 
-        if(!TextUtils.isEmpty(teacherEmail) && teacherEmail.matches(Constants.EMAIL_PATTERN)) {
+        if(!TextUtils.isEmpty(teacherEmail) && teacherEmail.matches(ConstantsString.EMAIL_PATTERN)) {
             til_teacherEmail.setErrorEnabled(false);
             count++;
         } else {
@@ -188,17 +188,18 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_submit:
                 flag = true;
                 if(checkMandatoryFields()) {
-                    ClassData data = new ClassData();
-                    data._courseName = courseName;
-                    data._semester = semester;
-                    data._teacherEmail = teacherEmail;
-                    data._teacherName = teacherName;
+                    AddClassData data = new AddClassData();
+                    data.courseName = courseName;
+                    data.semester = semester;
+                    data.teacherEmail = teacherEmail;
+                    data.teacherName = teacherName;
                     boolean inserted = dbHelper.insertClassData(data);
-                    if(inserted) {                        flag = false;
+                    if(inserted) {
+                    	flag = false;
                         setFieldsEmpty();
-                        Constants.showAlertDialog(getActivity(), "Data Inserted");
+                        ConstantsString.showAlertDialog(getActivity(), "Data Inserted");
                     } else {
-                        Constants.showAlertDialog(getActivity(), "Data Insertion Failed");
+                        ConstantsString.showAlertDialog(getActivity(), "Data Insertion Failed");
                     }
                 }
                 break;
@@ -211,4 +212,20 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
         ac_teacherEmail.setText("");
         et_teacherName.setText("");
     }
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		if ( context instanceof AddDetailsActivity ) {
+			activity = (AddDetailsActivity)context;
+		} else {
+			throw new ClassCastException("Wrong activity is type cast");
+		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activity = null;
+	}
 }

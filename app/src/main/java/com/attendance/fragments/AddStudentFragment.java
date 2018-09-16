@@ -1,5 +1,6 @@
 package com.attendance.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -14,11 +15,12 @@ import android.widget.Button;
 
 import com.attendance.R;
 import com.attendance.activities.AddDetailsActivity;
+import com.attendance.adapters.CustomAdapter;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
 import com.attendance.database.MyDBHelper;
-import com.attendance.helper_classes.Constants;
+import com.attendance.helper_classes.ConstantsString;
 
 public class AddStudentFragment extends Fragment implements View.OnClickListener {
 
@@ -31,17 +33,11 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
 
     String className, studentName, phone, email;
     private boolean flag = false;
+	private AddDetailsActivity activity;
 
-    public static AddStudentFragment newInstance() {
+	public static AddStudentFragment newInstance() {
 		return new AddStudentFragment();
 	}
-
-    public class StudentData {
-        public String _className;
-        public String _studentname;
-        public String _phone;
-        public String _email;
-    }
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -53,10 +49,8 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
 
 		btn_submit.setOnClickListener(this);
         textChangeListeners();
-
-        ArrayAdapter _adapterCourses = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                ((AddDetailsActivity) getActivity()).coursesList);
-        sp_class.setAdapter(_adapterCourses);
+		CustomAdapter coursesAdapter = new CustomAdapter(activity, sp_class, ConstantsString.coursesList);
+        sp_class.setAdapter(coursesAdapter);
         return view;
     }
 
@@ -68,18 +62,18 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
     }
 
     private void initViews(View view) {
-	    til_studentName = (CustomTextInputLayout) view.findViewById(R.id.til_studentName);
-        til_class = (CustomTextInputLayout) view.findViewById(R.id.til_class);
-        til_phone = (CustomTextInputLayout) view.findViewById(R.id.til_phone);
-        til_email = (CustomTextInputLayout) view.findViewById(R.id.til_email);
+	    til_studentName = view.findViewById(R.id.til_studentName);
+        til_class = view.findViewById(R.id.til_class);
+        til_phone = view.findViewById(R.id.til_phone);
+        til_email = view.findViewById(R.id.til_email);
 
-        sp_class = (CustomSpinner) view.findViewById(R.id.sp_course);
+        sp_class = view.findViewById(R.id.sp_course);
 
-        et_studentName = (CustomInputEditText) view.findViewById(R.id.et_studentName);
-        et_phone = (CustomInputEditText) view.findViewById(R.id.et_phone);
-        et_email = (CustomInputEditText) view.findViewById(R.id.et_email);
+        et_studentName = view.findViewById(R.id.et_studentName);
+        et_phone = view.findViewById(R.id.et_phone);
+        et_email = view.findViewById(R.id.et_email);
 
-        btn_submit = (Button) view.findViewById(R.id.btn_submit);
+        btn_submit = view.findViewById(R.id.btn_submit);
     }
 
     TextWatcher textWatcher = new TextWatcher() {
@@ -95,7 +89,6 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
 
         @Override
         public void afterTextChanged(Editable s) {
-
             if(flag) {
                 checkMandatoryFields();
             }
@@ -130,7 +123,7 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
             til_phone.setErrorMessage("Phone No. must be of 10 digit");
         }
 
-        if(!TextUtils.isEmpty(email) && email.matches(Constants.EMAIL_PATTERN)) {
+        if(!TextUtils.isEmpty(email) && email.matches(ConstantsString.EMAIL_PATTERN)) {
             til_email.setErrorEnabled(false);
             count++;
         } else {
@@ -146,23 +139,30 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
             case R.id.btn_submit:
                 flag = true;
                 if(checkMandatoryFields()) {
-                    StudentData data = new StudentData();
-                    data._className = className;
-                    data._email = email;
-                    data._phone = phone;
-                    data._studentname = studentName;
+                    AddStudentData data = new AddStudentData();
+                    data.className = className;
+                    data.email = email;
+                    data.phone = phone;
+                    data.studentName = studentName;
                     boolean inserted = dbHelper.insertStudentData(data);
                     if(inserted) {
                         flag = false;
                         setFieldsEmpty();
-                        Constants.showAlertDialog(getActivity(), "Data Inserted");
+                        ConstantsString.showAlertDialog(getActivity(), "Data Inserted");
                     } else {
-                        Constants.showAlertDialog(getActivity(), "Email ID already exists");
+                        ConstantsString.showAlertDialog(getActivity(), "Email ID already exists");
                     }
                 }
                 break;
         }
     }
+
+	public class AddStudentData {
+		public String className;
+		public String studentName;
+		public String phone;
+		public String email;
+	}
 
     private void setFieldsEmpty() {
         sp_class.setText("");
@@ -170,4 +170,20 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
         et_phone.setText("");
         et_studentName.setText("");
     }
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		if ( context instanceof AddDetailsActivity ) {
+			activity = (AddDetailsActivity)context;
+		} else {
+			throw new ClassCastException("Wrong activity is type cast");
+		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activity = null;
+	}
 }

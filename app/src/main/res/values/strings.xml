@@ -57,5 +57,6 @@
     <string name="check_mandatory">Please fill all the mandatory fields</string>
 
     <string name="email_msg">Invalid Email Address</string>
+    <string name="student_name">Student Name</string>
 
 </resources>

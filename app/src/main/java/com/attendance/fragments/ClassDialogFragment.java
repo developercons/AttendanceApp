@@ -9,21 +9,26 @@ import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
+import com.attendance.adapters.CustomAdapter;
+import com.attendance.adapters.EditClassDetailsAdapter;
 import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
+import com.attendance.database.MyDBHelper;
+import com.attendance.helper_classes.ConstantsString;
 
-import java.util.ArrayList;
 
 public class ClassDialogFragment extends DialogFragment implements View.OnClickListener {
 
@@ -35,9 +40,9 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	private CustomAutoCompleteTextView ac_teacherEmail;
 	private CustomInputEditText et_teacherName;
 	private EditClassData data;
+	private RowData rowData;
+	private MyDBHelper dbHelper;
 	private boolean isFlag = false;
-
-	ArrayList<String> list = new ArrayList<>();
 
 	public ClassDialogFragment newInstance(ViewGroup parent) {
 		this.parent = parent;
@@ -51,19 +56,13 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View view = inflater.inflate(R.layout.fragment_add_class, parent, false);
 		data = new EditClassData();
+		dbHelper = MyDBHelper.getInstance(activity);
 		setupView(view);
 		builder.setView(view);
 		return builder.create();
 	}
 
 	private void setupView(View view) {
-
-		if (list.isEmpty()) {
-			list.add("A");
-			list.add("B");
-			list.add("C");
-		}
-
 		til_courseName = view.findViewById(R.id.til_courseName);
 		til_semester = view.findViewById(R.id.til_semester);
 		til_teacherEmail = view.findViewById(R.id.til_teacherEmail);
@@ -92,13 +91,12 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		btnSubmit.setOnClickListener(this);
 		tvBack.setVisibility(View.VISIBLE);
 
-
-		ArrayAdapter<String> adapter = new ArrayAdapter<>(activity.getApplicationContext(),
-				android.R.layout.simple_expandable_list_item_1, list);
-		adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
-
-		sp_courseName.setAdapter(adapter);
-		sp_semester.setAdapter(adapter);
+		CustomAdapter coursesAdapter = new CustomAdapter
+				(activity, sp_courseName, ConstantsString.coursesList);
+		CustomAdapter semesterAdapter = new CustomAdapter
+						(activity, sp_semester, ConstantsString.semesterList);
+		sp_courseName.setAdapter(coursesAdapter);
+		sp_semester.setAdapter(semesterAdapter);
 
 	}
 
@@ -111,10 +109,16 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 
 			case R.id.btn_submit:
 				isFlag = true;
-				if (checkMandatoryFields()) {
+				if ( checkMandatoryFields() ) {
 					isFlag = false;
-					dismiss();
-				} else {
+					if ( dbHelper.updateClassData(data) ) {
+						dismiss();
+					}
+					else {
+						activity.toast("Database is not update");
+					}
+				}
+				else {
 					isFlag = false;
 					activity.toast(getString(R.string.check_mandatory));
 				}
@@ -129,6 +133,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		data.setSemester(sp_semester.toString());
 		data.setTeacherEmailId(ac_teacherEmail.toString());
 		data.setTeacherName(et_teacherName.toString());
+		data.setRowData(rowData);
 
 		if (!TextUtils.isEmpty(data.getCourseName())) {
 			til_courseName.setDisabled();
@@ -160,6 +165,13 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		return count != 0 && count == totalCount;
 	}
 
+	public void rowData(EditClassDetailsAdapter.RowData data) {
+		rowData = new RowData();
+		rowData.setCourseName(data.getCourseName());
+		rowData.setSemester(data.getSemester());
+//		activity.toast(data.getPosition());
+	}
+
 	private TextWatcher textWatcher = new TextWatcher() {
 		@Override
 		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -179,17 +191,47 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		}
 	};
 
-	public class EditClassData{
+	public class RowData {
 		private String courseName;
 		private String semester;
-		private String teacherEmailId;
-		private String teacherName;
 
 		public String getCourseName() {
 			return courseName;
 		}
 
-		public void setCourseName(String courseName) {
+		public String getSemester() {
+			return semester;
+		}
+
+		void setCourseName(String courseName) {
+			this.courseName = courseName;
+		}
+
+		void setSemester(String semester) {
+			this.semester = semester;
+		}
+	}
+
+	public class EditClassData {
+		private RowData rowData;
+		private String courseName;
+		private String semester;
+		private String teacherEmailId;
+		private String teacherName;
+
+		public RowData getRowData() {
+			return rowData;
+		}
+
+		public void setRowData(RowData rowData) {
+			this.rowData = rowData;
+		}
+
+		public String getCourseName() {
+			return courseName;
+		}
+
+		void setCourseName(String courseName) {
 			this.courseName = courseName;
 		}
 
@@ -197,7 +239,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 			return semester;
 		}
 
-		public void setSemester(String semester) {
+		void setSemester(String semester) {
 			this.semester = semester;
 		}
 
@@ -205,7 +247,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 			return teacherEmailId;
 		}
 
-		public void setTeacherEmailId(String teacherEmailId) {
+		void setTeacherEmailId(String teacherEmailId) {
 			this.teacherEmailId = teacherEmailId;
 		}
 
@@ -213,8 +255,18 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 			return teacherName;
 		}
 
-		public void setTeacherName(String teacherName) {
+		void setTeacherName(String teacherName) {
 			this.teacherName = teacherName;
+		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Window window = getDialog().getWindow();
+		if ( window != null ) {
+			window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+			window.setGravity(Gravity.CENTER);
 		}
 	}
 

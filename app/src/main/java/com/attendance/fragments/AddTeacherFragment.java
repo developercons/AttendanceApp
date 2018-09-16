@@ -11,17 +11,17 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.attendance.R;
 import com.attendance.activities.AddDetailsActivity;
+import com.attendance.adapters.CustomAdapter;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
 import com.attendance.database.MyDBHelper;
-import com.attendance.helper_classes.Constants;
 import com.attendance.helper_classes.PermissionUtils;
+import com.attendance.helper_classes.ConstantsString;
 
 public class AddTeacherFragment extends Fragment implements View.OnClickListener {
     CustomTextInputLayout til_teacherName, til_phone, til_email, til_password, til_qualification;
@@ -33,19 +33,11 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
     MyDBHelper dbHelper;
 
     String teacherName, phone, email, password, qualification;
-    private AddDetailsActivity activity;
+	private AddDetailsActivity activity;
 
     public static AddTeacherFragment newInstance() {
 		return new AddTeacherFragment();
 	}
-
-	public class AddTeacherData {
-	    public String _teacherName;
-	    public String _phone;
-	    public String _email;
-	    public String _password;
-	    public String _qualification;
-    }
 
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -57,10 +49,9 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
 		btn_submit.setOnClickListener(this);
 
 		textChangeListeners();
-
-        ArrayAdapter _adapter = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                ((AddDetailsActivity) getActivity()).qualificationList);
-        sp_qualification.setAdapter(_adapter);
+		CustomAdapter adapter = new CustomAdapter
+				(activity, sp_qualification, ConstantsString.qualificationList);
+        sp_qualification.setAdapter(adapter);
 
 		return view;
 	}
@@ -74,20 +65,20 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
     }
 
     private void initViews(View view) {
-        til_teacherName = (CustomTextInputLayout)  view.findViewById(R.id.til_teacherName);
-        til_phone = (CustomTextInputLayout)  view.findViewById(R.id.til_phone);
-        til_email = (CustomTextInputLayout)  view.findViewById(R.id.til_email);
-        til_password = (CustomTextInputLayout)  view.findViewById(R.id.til_password);
-        til_qualification = (CustomTextInputLayout)  view.findViewById(R.id.til_qualification);
+        til_teacherName = view.findViewById(R.id.til_teacherName);
+        til_phone = view.findViewById(R.id.til_phone);
+        til_email = view.findViewById(R.id.til_email);
+        til_password = view.findViewById(R.id.til_password);
+        til_qualification = view.findViewById(R.id.til_qualification);
 
-        sp_qualification = (CustomSpinner) view.findViewById(R.id.sp_qualification);
+        sp_qualification = view.findViewById(R.id.sp_qualification);
 
-        et_teacherName = (CustomInputEditText) view.findViewById(R.id.et_teacherName);
-        et_phone = (CustomInputEditText) view.findViewById(R.id.et_phone);
-        et_email = (CustomInputEditText) view.findViewById(R.id.et_email);
-        et_password = (CustomInputEditText) view.findViewById(R.id.et_password);
+        et_teacherName = view.findViewById(R.id.et_teacherName);
+        et_phone = view.findViewById(R.id.et_phone);
+        et_email = view.findViewById(R.id.et_email);
+        et_password = view.findViewById(R.id.et_password);
 
-        btn_submit = (Button) view.findViewById(R.id.btn_submit);
+        btn_submit = view.findViewById(R.id.btn_submit);
     }
 
     TextWatcher textWatcher = new TextWatcher() {
@@ -103,9 +94,9 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
 
         @Override
         public void afterTextChanged(Editable s) {
-            if(flag) {
-                checkMandatoryFields();
-            }
+	        if ( flag ) {
+		        checkMandatoryFields();
+	        }
         }
     };
 
@@ -131,7 +122,7 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
             til_phone.setErrorMessage("Phone No. must be of 10 digits");
         }
 
-        if(!TextUtils.isEmpty(email) && email.matches(Constants.EMAIL_PATTERN)) {
+        if(!TextUtils.isEmpty(email) && email.matches(ConstantsString.EMAIL_PATTERN)) {
             til_email.setErrorEnabled(false);
             count++;
         } else {
@@ -159,26 +150,28 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
 	    switch (v.getId()) {
             case R.id.btn_submit:
                 flag = true;
-                if(checkMandatoryFields()) {
+                if (checkMandatoryFields()) {
                     AddTeacherData data = new AddTeacherData();
-                    data._teacherName = teacherName;
-                    data._phone = phone;
-                    data._email = email;
-                    data._password = password;
-                    data._qualification = qualification;
+                    data.teacherName = teacherName;
+                    data.phone = phone;
+                    data.email = email;
+                    data.password = password;
+                    data.qualification = qualification;
                     boolean inserted = dbHelper.insertTeacherData(data);
                     if(inserted && PermissionUtils.isGranted()) {
                         flag = false;
                         setFieldsEmpty();
-                        Constants.showAlertDialog(getActivity(), "Data Inserted");
+                        ConstantsString.showAlertDialog(getActivity(), "Data Inserted");
 
                         SmsManager sms = SmsManager.getDefault();
                         StringBuilder stringBuilder = new StringBuilder();
                         stringBuilder.append("Email Id: ").append(email).append(" and Password: ").append(password);
                         sms.sendTextMessage(phone, null, stringBuilder.toString(), null, null);
+                        ConstantsString.showAlertDialog(getActivity(), "Data Inserted");
                     } else {
+                        ConstantsString.showAlertDialog(getActivity(), "Data Insertion Failed");
                         PermissionUtils.secondTimePermission(activity, activity.permissionList, activity.PERMISSION_REQUEST_CODE);
-                        Constants.showAlertDialog(getActivity(), "Data Insertion Failed");
+                        ConstantsString.showAlertDialog(getActivity(), "Data Insertion Failed");
                     }
                 }
                 break;
@@ -193,19 +186,27 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
         sp_qualification.setText("");
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof AddDetailsActivity) {
-            activity = (AddDetailsActivity)context;
-        } else {
-            throw  new ClassCastException("Wrong activity typecast");
-        }
-    }
+	public class AddTeacherData {
+		public String teacherName;
+		public String phone;
+		public String email;
+		public String password;
+		public String qualification;
+	}
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        activity = null;
-    }
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		if ( context instanceof AddDetailsActivity ) {
+			activity = (AddDetailsActivity)context;
+		} else {
+			throw new ClassCastException("Wrong activity is type cast");
+		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activity = null;
+	}
 }

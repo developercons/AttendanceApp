@@ -9,20 +9,22 @@ import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
+import com.attendance.adapters.CustomAdapter;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
-
-import java.util.ArrayList;
+import com.attendance.helper_classes.ConstantsString;
 
 public class StudentDialogFragment extends DialogFragment implements View.OnClickListener {
 
@@ -34,7 +36,6 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 	private CustomSpinner sp_course;
 	private EditStudentData data;
 	private boolean isFlags = false;
-	ArrayList<String> list = new ArrayList<>();
 
 	public StudentDialogFragment newInstance(ViewGroup parent) {
 		this.parent = parent;
@@ -54,12 +55,6 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 	}
 
 	private void setupView(View view) {
-		if (list.isEmpty()) {
-			list.add("A");
-			list.add("B");
-			list.add("C");
-		}
-
 		til_studentName = view.findViewById(R.id.til_studentName);
 		til_class = view.findViewById(R.id.til_class);
 		til_phone = view.findViewById(R.id.til_phone);
@@ -90,9 +85,7 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 		tvBack.setOnClickListener(this);
 		btnSubmit.setOnClickListener(this);
 
-		ArrayAdapter<String> adapter = new ArrayAdapter<>(activity.getApplicationContext(),
-				android.R.layout.simple_expandable_list_item_1, list);
-		adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
+		CustomAdapter adapter = new CustomAdapter(activity, sp_course, ConstantsString.coursesList);
 		sp_course.setAdapter(adapter);
 	}
 
@@ -216,6 +209,16 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 
 		}
 	};
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		Window window = getDialog().getWindow();
+		if ( window != null ) {
+			window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+			window.setGravity(Gravity.CENTER);
+		}
+	}
 
 	@Override
 	public void onAttach(Context context) {

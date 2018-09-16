@@ -33,36 +33,6 @@ public class AddDetailsActivity extends NavigationActivity {
 		clParent.addView(view);
 		toolbar.setSubtitle(getString(R.string.add_details));
 		setUpView();
-
-		if(qualificationList.size() == 0) {
-			qualificationList.add("BSC-IT");
-			qualificationList.add("BCA");
-			qualificationList.add("MSC-IT");
-			qualificationList.add("B-Tech");
-			qualificationList.add("BBA");
-			qualificationList.add("B-COM");
-		}
-
-		if(semesterList.size() == 0) {
-		    semesterList.add("1");
-		    semesterList.add("2");
-		    semesterList.add("3");
-		    semesterList.add("4");
-		    semesterList.add("5");
-		    semesterList.add("6");
-		    semesterList.add("7");
-		    semesterList.add("8");
-        }
-
-        if(coursesList.size() == 0) {
-		    coursesList.add("2D-Design");
-		    coursesList.add("3D-Design");
-		    coursesList.add("Data Analyst");
-		    coursesList.add("Data Science");
-		    coursesList.add("Big Data");
-		    coursesList.add("IOT");
-		    coursesList.add("AI");
-        }
 	}
 
     @Override

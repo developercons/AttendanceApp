@@ -15,12 +15,13 @@ import android.widget.Button;
 
 import com.attendance.R;
 import com.attendance.activities.AddDetailsActivity;
+import com.attendance.adapters.CustomAdapter;
 import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomTextInputLayout;
 import com.attendance.data_models.Teacher;
 import com.attendance.database.MyDBHelper;
-import com.attendance.helper_classes.Constants;
+import com.attendance.helper_classes.ConstantsString;
 
 import java.util.ArrayList;
 
@@ -62,10 +63,9 @@ public class TeacherLoginFragment extends Fragment implements View.OnClickListen
             for(Teacher teacher : MyDBHelper.getInstance(getActivity()).getTeacherEmail()) {
                 teacherEmailList.add(teacher.email);
             }
-            ArrayAdapter _adapterEmail = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                    teacherEmailList);
+	        CustomAdapter adapter = new CustomAdapter(getActivity(),ac_teacherEmail, teacherEmailList);
             ac_teacherEmail.setAdapter(null);
-            ac_teacherEmail.setAdapter(_adapterEmail);
+            ac_teacherEmail.setAdapter(adapter);
         }
     }
 
@@ -122,7 +122,7 @@ public class TeacherLoginFragment extends Fragment implements View.OnClickListen
         email = ac_teacherEmail.getText().toString().trim();
         password = et_password.getText().toString().trim();
 
-        if(!TextUtils.isEmpty(email) && email.matches(Constants.EMAIL_PATTERN)) {
+        if(!TextUtils.isEmpty(email) && email.matches(ConstantsString.EMAIL_PATTERN)) {
             til_teacherEmail.setErrorEnabled(false);
             count++;
         } else {
@@ -153,7 +153,8 @@ public class TeacherLoginFragment extends Fragment implements View.OnClickListen
                         startActivity(intent);
                         getActivity().finish();
                     } else {
-                        Constants.showAlertDialog(getActivity(), "Teacher does not exits.Please Enter Valid Email Address");
+                        ConstantsString.showAlertDialog(getActivity(), "Teacher does not exits.Please " +
+		                        "Enter Valid Email Address");
                     }
                 }
                 break;

@@ -1,5 +1,6 @@
 package com.attendance.adapters;
 
+
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v4.app.FragmentManager;
@@ -13,57 +14,38 @@ import android.widget.Toast;
 
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
-import com.attendance.data_models.DataModel;
-import com.attendance.fragments.ClassDialogFragment;
-import com.attendance.fragments.StudentDialogFragment;
-import com.attendance.fragments.StudentViewReportFragment;
+import com.attendance.data_models.TeacherData;
 import com.attendance.fragments.TeacherDialogFragment;
 
 import java.util.ArrayList;
 
-public class ViewEditDetailsAdapter extends RecyclerView.Adapter<
-		ViewEditDetailsAdapter.MyViewHolder> {
+public class EditTeacherDetailsAdapter extends RecyclerView.Adapter<
+		EditTeacherDetailsAdapter.MyViewHolder> {
 
-	private String[] tags= {"TEACHER_DETAILS", "CLASS_DETAILS", "STUDENT_DETAILS"};
-	private ArrayList<DataModel > dataList;
+	private ArrayList<TeacherData> dataList;
 	private Context context;
-	private String tag = "";
 
-	public ViewEditDetailsAdapter(Context context, ArrayList< DataModel > data, String tag) {
+	public EditTeacherDetailsAdapter(Context context, ArrayList< TeacherData > data) {
 		this.context = context;
 		dataList = data;
-		this.tag = tag;
 	}
 
 	@NonNull
 	@Override
 	public MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
 		LayoutInflater inflater =  LayoutInflater.from(parent.getContext());
-		View view = inflater.inflate(R.layout.view_edit_details, parent, false);
+		View view = inflater.inflate(R.layout.edit_teacher_details, parent, false);
 		return new MyViewHolder(view);
 	}
 
 	@Override
 	public void onBindViewHolder(@NonNull MyViewHolder holder, int i) {
 		holder.tvTeacherName.setText(dataList.get(i).getTeacherName());
-		holder.tvClassName.setText(dataList.get(i).getClassName());
+		holder.tvCourseName.setText(dataList.get(i).getCourseName());
 		holder.btnEdit.setOnClickListener(v -> {
-			FragmentManager manager = ((ViewDetailsActivity)context).getSupportFragmentManager();
-			if ( tag.equals(tags[ 0 ]) ) {
-				TeacherDialogFragment dialogFragment = new TeacherDialogFragment();
-				dialogFragment.show(manager, TeacherDialogFragment.TAG);
-			}
-			else if ( tag.equals(tags[ 1 ]) ) {
-				ClassDialogFragment dialogFragment = new ClassDialogFragment();
-				dialogFragment.show(manager, ClassDialogFragment.TAG);
-			}
-			else if ( tag.equals(tags[ 2 ]) ) {
-				StudentDialogFragment dialogFragment = new StudentDialogFragment();
-				dialogFragment.show(manager, StudentDialogFragment.TAG);
-			}
-			else {
-				toast("No dialog fragment found");
-			}
+			FragmentManager manager = ((ViewDetailsActivity )context).getSupportFragmentManager();
+			TeacherDialogFragment dialogFragment = new TeacherDialogFragment();
+			dialogFragment.show(manager, TeacherDialogFragment.TAG);
 		});
 	}
 
@@ -74,17 +56,19 @@ public class ViewEditDetailsAdapter extends RecyclerView.Adapter<
 
 	static class MyViewHolder extends RecyclerView.ViewHolder {
 		TextView tvTeacherName;
-		TextView tvClassName;
+		TextView tvCourseName;
 		Button btnEdit;
 		private MyViewHolder(View view) {
 			super(view);
 			tvTeacherName = view.findViewById(R.id.tvTeacherName);
-			tvClassName = view.findViewById(R.id.tvClassName);
+			tvCourseName = view.findViewById(R.id.tvCourseName);
 			btnEdit = view.findViewById(R.id.btnEdit);
 		}
 	}
+
 
 	private void toast(String msg) {
 		Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
 	}
 }
+

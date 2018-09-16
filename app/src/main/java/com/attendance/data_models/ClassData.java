@@ -1,19 +1,22 @@
 package com.attendance.data_models;
 
 public class ClassData {
-	private String teacherName;
-	private String className;
+	private String courseName;
+	private String semester;
 
-	public ClassData(String teacherName, String className) {
-		this.teacherName = teacherName;
-		this.className = className;
+	public String getCourseName() {
+		return courseName;
 	}
 
-	public String getTeacherName() {
-		return teacherName;
+	public String getSemester() {
+		return semester;
 	}
 
-	public String getClassName() {
-		return className;
+	public void setCourseName(String courseName) {
+		this.courseName = courseName;
+	}
+
+	public void setSemester(String semester) {
+		this.semester = semester;
 	}
 }

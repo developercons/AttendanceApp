@@ -13,8 +13,10 @@ import android.view.ViewGroup;
 
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
-import com.attendance.adapters.ViewEditDetailsAdapter;
-import com.attendance.data_models.DataModel;
+import com.attendance.adapters.EditClassDetailsAdapter;
+import com.attendance.adapters.EditStudentDetailsAdapter;
+import com.attendance.data_models.StudentData;
+import com.attendance.database.MyDBHelper;
 
 import java.util.ArrayList;
 
@@ -25,7 +27,8 @@ public class StudentDetailsFragment extends Fragment {
 	private RecyclerView.Adapter adapter;
 	private RecyclerView.LayoutManager layoutManager;
 	private ViewDetailsActivity activity;
-	private ArrayList<DataModel > dataList = new ArrayList<>();
+	private MyDBHelper dbHelper;
+	private ArrayList<StudentData > dataList = new ArrayList<>();
 
 	public static StudentDetailsFragment newInstance() {
 		return new StudentDetailsFragment();
@@ -35,27 +38,19 @@ public class StudentDetailsFragment extends Fragment {
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_student_details, container, false);
+		dbHelper = MyDBHelper.getInstance(activity);
 		recyclerView = view.findViewById(R.id.rcvEditStudent);
 		recyclerView.setHasFixedSize(true);
 		layoutManager = new LinearLayoutManager(activity);
 		recyclerView.setLayoutManager(layoutManager);
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
 
-		//todo: dummy data
-		dataList.add(new DataModel("Arun", "Cse"));
-		dataList.add(new DataModel("Navjot", "Cse"));
-		dataList.add(new DataModel("Rupinder", "Ece"));
-		dataList.add(new DataModel("Harman", "Me"));
-		dataList.add(new DataModel("Chanchal", "Ece"));
-		dataList.add(new DataModel("Arvind", "Me"));
-		dataList.add(new DataModel("Savdeep Singh", "Me"));
-		dataList.add(new DataModel("Neeru", "Case"));
-		dataList.add(new DataModel("Neeru", "Case"));
-		dataList.add(new DataModel("Neeru", "Case"));
-		dataList.add(new DataModel("Neeru", "Case"));
-
-		adapter = new ViewEditDetailsAdapter(activity, dataList, TAG);
-		recyclerView.setAdapter(adapter);
+		if ( !dbHelper.getStudentData().isEmpty() ) {
+			dataList.clear();
+			dataList.addAll(dbHelper.getStudentData());
+			adapter = new EditStudentDetailsAdapter(activity, dataList);
+			recyclerView.setAdapter(adapter);
+		}
 		return view;
 	}
 

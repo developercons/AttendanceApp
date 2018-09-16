@@ -6,11 +6,15 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.attendance.data_models.ClassData;
+import com.attendance.data_models.StudentData;
 import com.attendance.data_models.Teacher;
+import com.attendance.data_models.TeacherData;
 import com.attendance.fragments.AddClassFragment;
 import com.attendance.fragments.AddStudentFragment;
 import com.attendance.fragments.AddTeacherFragment;
 import com.attendance.fragments.TeacherLoginFragment;
+import com.attendance.fragments.ClassDialogFragment;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -39,10 +43,11 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	private static final String TEACHER_LOGIN_PASSWORD = "teacherPassword";
 
 	// TODO: Add Class Details Tables
-	private static final String CLASS_TABLE_NAME = "addClassDetails";
+	private static final String CLASS_TABLE_NAME = "classDetails";
 	private static final String CLASS_COURSE_NAME = "courseName";
     private static final String CLASS_SEMESTER = "semester";
     private static final String CLASS_TEACHER_NAME = "teacherName";
+    private static final String CLASS_TEACHER_EMAIL_ID = "teacherEmailId";
 
 	// TODO: Teacher Details Tables
     private static final String TEACHER_TABLE_NAME = "teacherDetails";
@@ -85,7 +90,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
     private static MyDBHelper instance;
 
-    public MyDBHelper(Context context) {
+    private MyDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.getReadableDatabase();
     }
@@ -143,6 +148,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 			classColumnList.add(CLASS_COURSE_NAME);
 			classColumnList.add(CLASS_SEMESTER);
 			classColumnList.add(CLASS_TEACHER_NAME);
+			classColumnList.add(CLASS_TEACHER_EMAIL_ID);
 		}
 
 		/**************** Todo: teacher details table ***********************/
@@ -201,7 +207,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
 
 	@Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		// TODO: 5/31/2018 new db change work in progress
 		listOfAllTables();
 //        switch (oldVersion) {
 //            case 1:
@@ -235,7 +240,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 //        }
 
     }
-	// TODO: 5/31/2018 new db change work in progress
+
     private void updateTables(SQLiteDatabase db, String TABLE_NAME, ArrayList< String > columnList, ArrayList< String > newColumnList) {
     	try {
 			StringBuilder createQueryString = new StringBuilder();
@@ -295,49 +300,64 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE " + tableName);
     }
 
-
-	public String getString(Cursor cursor, String column) {
-		try {
-			int index = cursor.getColumnIndex(column);
-			if ( index != -1 ) {
-				return cursor.getString(index);
-			}
-		} catch ( Exception e ) {
-//			e.getMessage();
-		}
-		return "";
-	}
-
-	private class JsonParsing<T> {
-		private Object fromJson(String data, Class<T> tClass) throws JsonParseException {
-			JsonParser jsonParser = new JsonParser();
-			JsonElement jsonElement = jsonParser.parse(data);
-			return new Gson().fromJson(jsonElement, tClass);
-		}
-	}
-
 	public boolean insertTeacherData(AddTeacherFragment.AddTeacherData data) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TEACHER_NAME, data._teacherName);
-        contentValues.put(TEACHER_MOBILE_NUMBER, data._phone);
-        contentValues.put(TEACHER_EMAIL_ID, data._email);
-        contentValues.put(TEACHER_PASSWORD, data._password);
-        contentValues.put(TEACHER_QUALIFICATION, data._qualification);
+    	try {
+		    SQLiteDatabase db = this.getWritableDatabase();
+		    ContentValues contentValues = new ContentValues();
+		    contentValues.put(TEACHER_NAME, data.teacherName);
+		    contentValues.put(TEACHER_MOBILE_NUMBER, data.phone);
+		    contentValues.put(TEACHER_EMAIL_ID, data.email);
+		    contentValues.put(TEACHER_PASSWORD, data.password);
+		    contentValues.put(TEACHER_QUALIFICATION, data.qualification);
 
-        Cursor cursor = null;
-        String query = "SELECT * FROM "+TEACHER_TABLE_NAME+" WHERE " + TEACHER_EMAIL_ID +"=?";
-		cursor= db.rawQuery(query,new String[]{data._email});
-		if(cursor.getCount() > 0) {
-			cursor.close();
-			return false;
-		} else {
-			db.insert(TEACHER_TABLE_NAME, null, contentValues);
-			cursor.close();
-			return true;
-		}
+		    String _selection = TEACHER_EMAIL_ID + " = ? ";
+		    String[] _selectionToArgs = {data.email};
+		    String[] _colToReturn = {"*"};
+		    Cursor cursor = db.query(TEACHER_TABLE_NAME, _colToReturn, _selection,
+				    _selectionToArgs, null, null, null);
+
+//		    Cursor cursor = null;
+//		    String query = "SELECT * FROM " + TEACHER_TABLE_NAME + " WHERE " + TEACHER_EMAIL_ID + "=?";
+//		    cursor = db.rawQuery(query, new String[] {data._email});
+		    if ( cursor.getCount() > 0 ) {
+			    cursor.close();
+			    return false;
+		    }
+		    else {
+			    db.insert(TEACHER_TABLE_NAME, null, contentValues);
+			    cursor.close();
+			    return true;
+		    }
+	    } catch ( Exception e ) {
+    		e.getMessage();
+	    }
+	    return false;
 	}
 
+	public ArrayList<TeacherData > getTeacherData() {
+    	ArrayList<TeacherData> dataList = new ArrayList<>();
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	try {
+		    String[] _colToReturn = {CLASS_TEACHER_NAME,CLASS_COURSE_NAME};
+		    Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, null,
+				    null, null, null, null);
+		    if ( cursor.getCount() > 0 ) {
+		    	cursor.moveToFirst();
+		    	while ( !cursor.isAfterLast() ) {
+					TeacherData data = new TeacherData();
+					data.setTeacherName(getString(cursor, CLASS_TEACHER_NAME));
+					data.setCourseName(getString(cursor, CLASS_COURSE_NAME));
+					dataList.add(data);
+					cursor.moveToNext();
+			    }
+			    cursor.close();
+		    	return dataList;
+		    }
+	    } catch ( Exception e ) {
+    		e.getMessage();
+	    }
+	    return dataList;
+	}
 	public boolean checkTeacherEmail(TeacherLoginFragment.TeacherLoginData data) {
 
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -370,34 +390,154 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		return  _array_list;
 	}
 
-	public boolean insertClassData(AddClassFragment.ClassData data) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(CLASS_COURSE_NAME, data._courseName);
-        contentValues.put(CLASS_SEMESTER, data._semester);
-        contentValues.put(CLASS_TEACHER_NAME, data._teacherEmail);
-        db.insert(CLASS_TABLE_NAME, null, contentValues);
-        return true;
+	public boolean insertClassData(AddClassFragment.AddClassData data) {
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			ContentValues contentValues = new ContentValues();
+			contentValues.put(CLASS_COURSE_NAME, data.courseName);
+			contentValues.put(CLASS_SEMESTER, data.semester);
+			contentValues.put(CLASS_TEACHER_NAME, data.teacherName);
+			contentValues.put(CLASS_TEACHER_EMAIL_ID, data.teacherEmail);
+			db.insert(CLASS_TABLE_NAME, null, contentValues);
+			return true;
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+        return false;
 	}
 
-	public boolean insertStudentData(AddStudentFragment.StudentData data) {
-		SQLiteDatabase db = this.getWritableDatabase();
-		ContentValues contentValues = new ContentValues();
-		contentValues.put(STUDENT_CLASS, data._className);
-		contentValues.put(STUDENT_EMAIL_ID, data._email);
-		contentValues.put(STUDENT_MOBILE_NO, data._phone);
-		contentValues.put(STUDENT_NAME, data._studentname);
+	public ArrayList<ClassData > getClassData() {
+		ArrayList<ClassData> dataList = new ArrayList<>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		try {
+			String[] _colToReturn = {CLASS_COURSE_NAME, CLASS_SEMESTER};
+			Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, null,
+					null, null, null, null);
+			if ( cursor.getCount() > 0 ) {
+				cursor.moveToFirst();
+				while ( !cursor.isAfterLast() ) {
+					ClassData data = new ClassData();
+					data.setCourseName(getString(cursor, CLASS_COURSE_NAME));
+					data.setSemester(getString(cursor, CLASS_SEMESTER));
+					dataList.add(data);
+					cursor.moveToNext();
+				}
+				cursor.close();
+				return dataList;
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return dataList;
+	}
 
-		Cursor cursor = null;
-		String query = "SELECT * FROM " + STUDENT_TABLE_NAME + " WHERE " + STUDENT_EMAIL_ID + "=?";
-		cursor = db.rawQuery(query, new String[]{data._email});
-		if (cursor.getCount() > 0) {
-			cursor.close();
-			return false;
-		} else {
-			db.insert(STUDENT_TABLE_NAME, null, contentValues);
-			cursor.close();
-			return true;
+	public boolean updateClassData(ClassDialogFragment.EditClassData data) {
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			String _selection = CLASS_COURSE_NAME + " = ? AND " + CLASS_SEMESTER + " = ?" ;
+			String[] _selectionToArgs = {data.getRowData().getCourseName(),
+					data.getRowData().getSemester()};
+			String[] _colToReturn = {PRIMARY_ID, CLASS_COURSE_NAME, CLASS_SEMESTER};
+			Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, _selection,
+					_selectionToArgs, null, null, null);
+			if ( cursor.getCount() > 0 ) {
+				ContentValues values =  new ContentValues();
+				values.put(CLASS_COURSE_NAME, data.getCourseName());
+				values.put(CLASS_SEMESTER, data.getSemester());
+				values.put(CLASS_TEACHER_EMAIL_ID, data.getTeacherEmailId());
+				values.put(CLASS_TEACHER_NAME, data.getTeacherName());
+
+				String primaryId = getString(cursor, PRIMARY_ID);
+				String selection = primaryId + " = ?";
+				String[] selectionToArgs = {primaryId};
+				db.update(CLASS_TABLE_NAME, values, selection, selectionToArgs);
+				cursor.close();
+				return true;
+			} else {
+				cursor.close();
+				return false;
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return false;
+	}
+
+	public boolean insertStudentData(AddStudentFragment.AddStudentData data) {
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			ContentValues contentValues = new ContentValues();
+			contentValues.put(STUDENT_CLASS, data.className);
+			contentValues.put(STUDENT_EMAIL_ID, data.email);
+			contentValues.put(STUDENT_MOBILE_NO, data.phone);
+			contentValues.put(STUDENT_NAME, data.studentName);
+
+			String _selection = STUDENT_EMAIL_ID + " = ? ";
+			String[] _selectionToArgs = {data.email};
+			String[] _colToReturn = {"*"};
+			Cursor cursor = db.query(STUDENT_TABLE_NAME, _colToReturn, _selection,
+					_selectionToArgs, null, null, null);
+
+//		Cursor cursor = null;
+//		String query = "SELECT * FROM " + STUDENT_TABLE_NAME + " WHERE " + STUDENT_EMAIL_ID + "=?";
+//		cursor = db.rawQuery(query, new String[]{data._email});
+			if ( cursor.getCount() > 0 ) {
+				cursor.close();
+				return false;
+			}
+			else {
+				db.insert(STUDENT_TABLE_NAME, null, contentValues);
+				cursor.close();
+				return true;
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return false;
+	}
+
+	public ArrayList<StudentData > getStudentData() {
+		ArrayList<StudentData> dataList = new ArrayList<>();
+		SQLiteDatabase db = this.getReadableDatabase();
+		try {
+			String[] _colToReturn = {STUDENT_NAME, STUDENT_CLASS};
+			Cursor cursor = db.query(STUDENT_TABLE_NAME, _colToReturn, null,
+					null, null, null, null);
+			if ( cursor.getCount() > 0 ) {
+				cursor.moveToFirst();
+				while ( !cursor.isAfterLast() ) {
+					StudentData data = new StudentData();
+					data.setStudentName(getString(cursor, STUDENT_NAME));
+					data.setClassName(getString(cursor, STUDENT_CLASS));
+					dataList.add(data);
+					cursor.moveToNext();
+				}
+				cursor.close();
+				return dataList;
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return dataList;
+	}
+
+	public String getString(Cursor cursor, String column) {
+		try {
+			int index = cursor.getColumnIndex(column);
+			if ( index != -1 ) {
+				return cursor.getString(index);
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return "";
+	}
+
+	private class JsonParsing<T> {
+		private Object fromJson(String data, Class<T> tClass) throws JsonParseException {
+			JsonParser jsonParser = new JsonParser();
+			JsonElement jsonElement = jsonParser.parse(data);
+			return new Gson().fromJson(jsonElement, tClass);
 		}
 	}
 }
