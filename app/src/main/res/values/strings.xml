@@ -9,6 +9,7 @@
     <string name="dashboard">Dashboard</string>
     <string name="add_details">Add Details</string>
     <string name="view_details">View Details</string>
+    <string name="view_edit_details">View/Edit Details</string>
     <string name="view_reports">View Reports</string>
     <string name="logout">Logout</string>
     <string name="title_activity_login">Sign in</string>
@@ -28,6 +29,8 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="class_name">Class Name</string>
+    <string name="view_edit">View/Edit</string>
 
     <!-- TODO: Add Fragments Tabs Name -->
     <string name="add_teacher">Add Teacher</string>
@@ -50,5 +53,7 @@
 
     <!-- TODO: Add Student Strings-->
     <string name="class_txt">Class</string>
+    <string name="edit_class">Edit Class</string>
+    <string name="check_mandatory">Please fill all the mandatory fields</string>
 
 </resources>
