@@ -1,5 +1,6 @@
 package com.attendance.fragments;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -9,6 +10,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
@@ -18,8 +20,11 @@ import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
+import com.attendance.data_models.Teacher;
 import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.Constants;
+
+import java.util.ArrayList;
 
 public class AddClassFragment extends Fragment implements View.OnClickListener {
 
@@ -30,6 +35,8 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
 
 	String courseName, semester, teacherEmail, teacherName;
 	Button btn_submit;
+    ArrayList<Teacher> teacherAllDataList = new ArrayList<>();
+    ArrayList<String> teacherEmailList = new ArrayList<>();
 
 	MyDBHelper dbHelper;
 
@@ -46,7 +53,22 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
         public String _teacherName;
     }
 
-	@Override
+    @Override
+    public void setUserVisibleHint(boolean isVisibleToUser) {
+        super.setUserVisibleHint(isVisibleToUser);
+        if(isVisibleToUser) {
+            teacherAllDataList.addAll(MyDBHelper.getInstance(getActivity()).getTeacherEmail());
+            for(Teacher teacher : MyDBHelper.getInstance(getActivity()).getTeacherEmail()) {
+                teacherEmailList.add(teacher.email);
+            }
+            ArrayAdapter _adapterEmail = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
+                    teacherEmailList);
+            ac_teacherEmail.setAdapter(null);
+            ac_teacherEmail.setAdapter(_adapterEmail);
+        }
+    }
+
+    @Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_add_class, container, false);
@@ -66,6 +88,16 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
         //set Adapters
         sp_courseName.setAdapter(_adapterCourses);
         sp_semester.setAdapter(_adapterSemester);
+
+        ac_teacherEmail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String email = ac_teacherEmail.getText().toString().trim();
+                String name = teacherAllDataList.get(teacherEmailList.indexOf(email)).name;
+                et_teacherName.setText(name);
+                et_teacherName.setTextColor(Color.BLACK);
+            }
+        });
 		return view;
 	}
 

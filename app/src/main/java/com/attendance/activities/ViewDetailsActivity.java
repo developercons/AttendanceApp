@@ -7,11 +7,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.attendance.R;
-import com.attendance.adapters.AddDetailsViewPagerAdapter;
 import com.attendance.adapters.ViewDetailsViewPagerAdapter;
-import com.attendance.fragments.AddClassFragment;
-import com.attendance.fragments.AddStudentFragment;
-import com.attendance.fragments.AddTeacherFragment;
 import com.attendance.fragments.ClassDetailsFragment;
 import com.attendance.fragments.StudentDetailsFragment;
 import com.attendance.fragments.TeacherDetailsFragment;

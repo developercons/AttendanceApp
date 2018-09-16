@@ -74,6 +74,7 @@
                 <com.attendance.custom_classes.CustomInputEditText
                     android:id="@+id/et_teacherName"
                     android:layout_width="match_parent"
+                    android:enabled="false"
                     android:layout_height="wrap_content"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 

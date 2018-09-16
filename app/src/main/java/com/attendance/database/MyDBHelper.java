@@ -6,9 +6,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.attendance.data_models.Teacher;
 import com.attendance.fragments.AddClassFragment;
 import com.attendance.fragments.AddStudentFragment;
 import com.attendance.fragments.AddTeacherFragment;
+import com.attendance.fragments.TeacherLoginFragment;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -336,9 +338,37 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	/*public ArrayList<Teacher> getTeacherEmail() {
+	public boolean checkTeacherEmail(TeacherLoginFragment.TeacherLoginData data) {
 
-	}*/
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor cursor = null;
+		String query = "SELECT * FROM "+TEACHER_TABLE_NAME+" WHERE " + TEACHER_EMAIL_ID +"=?";
+		cursor= db.rawQuery(query,new String[]{data._email});
+		if(cursor.getCount() > 0) {
+			cursor.close();
+			return true;
+		} else {
+			cursor.close();
+			return false;
+		}
+	}
+
+	public ArrayList<Teacher> getTeacherEmail() {
+		ArrayList<Teacher> _array_list = new ArrayList<>();
+		//SQLiteDatabase db = this.getReadableDatabase(ConstantStrings.DB_KEY);
+		SQLiteDatabase db = this.getReadableDatabase();
+		Cursor _cursor = db.query(TEACHER_TABLE_NAME, null, null, null, null, null, null);
+		_cursor.moveToFirst();
+		while(!_cursor.isAfterLast()) {
+			Teacher _data = new Teacher();
+			_data.email = _cursor.getString(_cursor.getColumnIndex(TEACHER_EMAIL_ID));
+			_data.name = _cursor.getString(_cursor.getColumnIndex(TEACHER_NAME));
+			_array_list.add(_data);
+			_cursor.moveToNext();
+		}
+		_cursor.close();
+		return  _array_list;
+	}
 
 	public boolean insertClassData(AddClassFragment.ClassData data) {
         SQLiteDatabase db = this.getWritableDatabase();

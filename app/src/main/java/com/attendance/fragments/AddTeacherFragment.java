@@ -1,8 +1,10 @@
 package com.attendance.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.telephony.SmsManager;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -19,6 +21,7 @@ import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
 import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.Constants;
+import com.attendance.helper_classes.PermissionUtils;
 
 public class AddTeacherFragment extends Fragment implements View.OnClickListener {
     CustomTextInputLayout til_teacherName, til_phone, til_email, til_password, til_qualification;
@@ -30,8 +33,9 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
     MyDBHelper dbHelper;
 
     String teacherName, phone, email, password, qualification;
+    private AddDetailsActivity activity;
 
-	public static AddTeacherFragment newInstance() {
+    public static AddTeacherFragment newInstance() {
 		return new AddTeacherFragment();
 	}
 
@@ -163,11 +167,17 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
                     data._password = password;
                     data._qualification = qualification;
                     boolean inserted = dbHelper.insertTeacherData(data);
-                    if(inserted) {
+                    if(inserted && PermissionUtils.isGranted()) {
                         flag = false;
                         setFieldsEmpty();
                         Constants.showAlertDialog(getActivity(), "Data Inserted");
+
+                        SmsManager sms = SmsManager.getDefault();
+                        StringBuilder stringBuilder = new StringBuilder();
+                        stringBuilder.append("Email Id: ").append(email).append(" and Password: ").append(password);
+                        sms.sendTextMessage(phone, null, stringBuilder.toString(), null, null);
                     } else {
+                        PermissionUtils.secondTimePermission(activity, activity.permissionList, activity.PERMISSION_REQUEST_CODE);
                         Constants.showAlertDialog(getActivity(), "Data Insertion Failed");
                     }
                 }
@@ -181,5 +191,21 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
         et_phone.setText("");
         et_password.setText("");
         sp_qualification.setText("");
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof AddDetailsActivity) {
+            activity = (AddDetailsActivity)context;
+        } else {
+            throw  new ClassCastException("Wrong activity typecast");
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        activity = null;
     }
 }

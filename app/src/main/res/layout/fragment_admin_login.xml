@@ -1,0 +1,46 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_gravity="center"
+    tools:context="com.attendance.fragments.TeacherLoginFragment">
+
+    <com.attendance.custom_classes.CustomTextInputLayout
+        android:id="@+id/til_username"
+        android:layout_width="match_parent"
+        android:hint="Username"
+        android:layout_height="wrap_content">
+        <com.attendance.custom_classes.CustomInputEditText
+            android:id="@+id/et_username"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </com.attendance.custom_classes.CustomTextInputLayout>
+
+    <com.attendance.custom_classes.CustomTextInputLayout
+        android:id="@+id/til_password"
+        android:layout_width="match_parent"
+        android:hint="@string/password"
+        android:layout_height="wrap_content">
+        <com.attendance.custom_classes.CustomInputEditText
+            android:id="@+id/et_password"
+            android:layout_width="match_parent"
+            android:inputType="textPassword"
+            android:layout_height="wrap_content"/>
+    </com.attendance.custom_classes.CustomTextInputLayout>
+
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_marginTop="10dp"
+        android:paddingStart="5dp"
+        android:paddingEnd="5dp"
+        android:textSize="12sp"
+        android:text="@string/submit_btn_txt"
+        android:layout_gravity="center"
+        android:textColor="@android:color/white"
+        android:background="@drawable/button_bg"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"/>
+
+
+</LinearLayout>
