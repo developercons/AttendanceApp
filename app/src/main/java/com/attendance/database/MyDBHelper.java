@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.attendance.fragments.AddTeacherFragment;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParseException;
@@ -311,6 +312,38 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		}
 	}
 
+	public boolean insertTeacherData(AddTeacherFragment.TeacherData data) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TEACHER_NAME, data._teacherName);
+        contentValues.put(TEACHER_MOBILE_NUMBER, data._phone);
+        contentValues.put(TEACHER_EMAIL_ID, data._email);
+        contentValues.put(TEACHER_PASSWORD, data._password);
+        contentValues.put(TEACHER_QUALIFICATION, data._qualification);
+        db.insert(TEACHER_TABLE_NAME, null, contentValues);
+        return true;
+	}
+
+	public boolean insertClassData(AddTeacherFragment.TeacherData data) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(CLASS_COURSE_NAME, data._teacherName);
+        contentValues.put(CLASS_SEMESTER, data._phone);
+        contentValues.put(CLASS_TEACHER_NAME, data._email);
+        db.insert(CLASS_TABLE_NAME, null, contentValues);
+        return true;
+	}
+
+	public boolean insertStudentData(AddTeacherFragment.TeacherData data) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(STUDENT_CLASS, data._teacherName);
+        contentValues.put(STUDENT_EMAIL_ID, data._phone);
+        contentValues.put(STUDENT_MOBILE_NO, data._email);
+        contentValues.put(STUDENT_NAME, data._password);
+        db.insert(STUDENT_TABLE_NAME, null, contentValues);
+        return true;
+	}
 }
 
 

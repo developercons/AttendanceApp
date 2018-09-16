@@ -1,14 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.AddStudentFragment">
+    android:orientation="vertical">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
 
-</FrameLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/activity_horizontal_margin"
+            android:layout_marginRight="@dimen/activity_horizontal_margin"
+            android:layout_gravity="center"
+            android:orientation="vertical">
+
+            <com.attendance.custom_classes.CustomTextInputLayout
+                android:id="@+id/til_studentName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/name">
+                <com.attendance.custom_classes.CustomInputEditText
+                    android:id="@+id/et_studentName"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"/>
+            </com.attendance.custom_classes.CustomTextInputLayout>
+
+            <com.attendance.custom_classes.CustomTextInputLayout
+                android:id="@+id/til_class"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/class_txt">
+                <com.attendance.custom_classes.CustomSpinner
+                    android:id="@+id/sp_class"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"/>
+            </com.attendance.custom_classes.CustomTextInputLayout>
+
+            <com.attendance.custom_classes.CustomTextInputLayout
+                android:id="@+id/til_phone"
+                android:layout_width="match_parent"
+                android:hint="@string/contact"
+                android:layout_height="wrap_content">
+                <com.attendance.custom_classes.CustomInputEditText
+                    android:id="@+id/et_phone"
+                    android:layout_width="match_parent"
+                    android:inputType="phone"
+                    android:layout_height="50dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"/>
+            </com.attendance.custom_classes.CustomTextInputLayout>
+
+            <com.attendance.custom_classes.CustomTextInputLayout
+                android:id="@+id/til_email"
+                android:layout_width="match_parent"
+                android:hint="@string/email"
+                android:layout_height="wrap_content">
+                <com.attendance.custom_classes.CustomInputEditText
+                    android:id="@+id/et_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:paddingStart="10dp"
+                    android:paddingEnd="10dp"
+                    android:inputType="textEmailAddress"/>
+            </com.attendance.custom_classes.CustomTextInputLayout>
+
+            <Button
+                android:id="@+id/btn_submit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/submit_btn_txt"
+                android:textColor="@android:color/white"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/button_bg"/>
+        </LinearLayout>
+
+    </ScrollView>
+</LinearLayout>

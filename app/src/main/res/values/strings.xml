@@ -56,4 +56,6 @@
     <string name="edit_class">Edit Class</string>
     <string name="check_mandatory">Please fill all the mandatory fields</string>
 
+    <string name="email_msg">Invalid Email Address</string>
+
 </resources>
