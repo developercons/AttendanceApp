@@ -6,7 +6,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,15 +27,15 @@ import java.util.ArrayList;
 
 public class ClassDialogFragment extends DialogFragment implements View.OnClickListener {
 
-	public static final String TAG = "CLASS_UPDATE";
+	public static final String TAG = "CLASS_DETAILS_UPDATE";
 	private ViewDetailsActivity activity;
 	private ViewGroup parent;
 	private CustomTextInputLayout til_courseName,til_semester, til_teacherEmail, til_teacherName;
 	private CustomSpinner sp_courseName,sp_semester;
 	private CustomAutoCompleteTextView ac_teacherEmail;
 	private CustomInputEditText et_teacherName;
-	private TextView tvBack;
 	private EditClassData data;
+	private boolean isFlag = false;
 
 	ArrayList<String> list = new ArrayList<>();
 
@@ -70,7 +72,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		sp_semester = view.findViewById(R.id.sp_semester);
 		ac_teacherEmail = view.findViewById(R.id.ac_teacherEmail);
 		et_teacherName = view.findViewById(R.id.et_teacherName);
-		tvBack = view.findViewById(R.id.tvBack);
+		TextView tvBack = view.findViewById(R.id.tvClassBack);
 		Button btnSubmit = view.findViewById(R.id.btn_submit);
 		
 		// TODO: set focus change listener
@@ -79,10 +81,18 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		ac_teacherEmail.setFocusChangeEmailId(til_teacherEmail);
 		et_teacherName.setFocusChange(til_teacherName);
 
+		//TODO: implements textWatcher on Fields
+		sp_courseName.addTextChangedListener(textWatcher);
+		sp_semester.addTextChangedListener(textWatcher);
+		ac_teacherEmail.addTextChangedListener(textWatcher);
+		et_teacherName.addTextChangedListener(textWatcher);
+
 		//todo: implement click listener
 		tvBack.setOnClickListener(this);
 		btnSubmit.setOnClickListener(this);
 		tvBack.setVisibility(View.VISIBLE);
+
+
 		ArrayAdapter<String> adapter = new ArrayAdapter<>(activity.getApplicationContext(),
 				android.R.layout.simple_expandable_list_item_1, list);
 		adapter.setDropDownViewResource( android.R.layout.simple_spinner_dropdown_item);
@@ -95,14 +105,17 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	@Override
 	public void onClick(View v) {
 		switch ( v.getId() ) {
-			case R.id.tvBack:
+			case R.id.tvClassBack:
 				dismiss();
 				break;
 
 			case R.id.btn_submit:
+				isFlag = true;
 				if (checkMandatoryFields()) {
+					isFlag = false;
 					dismiss();
 				} else {
+					isFlag = false;
 					activity.toast(getString(R.string.check_mandatory));
 				}
 				break;
@@ -118,28 +131,28 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		data.setTeacherName(et_teacherName.toString());
 
 		if (!TextUtils.isEmpty(data.getCourseName())) {
-			til_courseName.setEnabled();
+			til_courseName.setDisabled();
 			count++;
 		} else {
 			til_courseName.setErrorMessage();
 		}
 
 		if (!TextUtils.isEmpty(data.getSemester())) {
-			til_semester.setEnabled();
+			til_semester.setDisabled();
 			count++;
 		} else {
 			til_semester.setErrorMessage();
 		}
 
 		if (!TextUtils.isEmpty(data.getTeacherEmailId())) {
-			til_teacherEmail.setEnabled();
+			til_teacherEmail.setDisabled();
 			count++;
 		} else {
 			til_teacherEmail.setErrorMessage();
 		}
 
 		if (!TextUtils.isEmpty(data.getTeacherName())) {
-			til_teacherName.setEnabled();
+			til_teacherName.setDisabled();
 			count++;
 		} else {
 			til_teacherName.setErrorMessage();
@@ -147,21 +160,24 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		return count != 0 && count == totalCount;
 	}
 
-	@Override
-	public void onAttach(Context context) {
-		super.onAttach(context);
-		if ( context instanceof ViewDetailsActivity ) {
-			activity = (ViewDetailsActivity) context;
-		} else {
-			throw new ClassCastException("Wrong activity fragment typecast");
-		}
-	}
+	private TextWatcher textWatcher = new TextWatcher() {
+		@Override
+		public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-	@Override
-	public void onDetach() {
-		super.onDetach();
-		activity = null;
-	}
+		}
+
+		@Override
+		public void onTextChanged(CharSequence s, int start, int before, int count) {
+			if ( isFlag ) {
+				checkMandatoryFields();
+			}
+		}
+
+		@Override
+		public void afterTextChanged(Editable s) {
+
+		}
+	};
 
 	public class EditClassData{
 		private String courseName;
@@ -200,5 +216,21 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		public void setTeacherName(String teacherName) {
 			this.teacherName = teacherName;
 		}
+	}
+
+	@Override
+	public void onAttach(Context context) {
+		super.onAttach(context);
+		if ( context instanceof ViewDetailsActivity ) {
+			activity = (ViewDetailsActivity) context;
+		} else {
+			throw new ClassCastException("Wrong activity fragment typecast");
+		}
+	}
+
+	@Override
+	public void onDetach() {
+		super.onDetach();
+		activity = null;
 	}
 }

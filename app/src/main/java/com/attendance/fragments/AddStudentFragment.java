@@ -62,7 +62,7 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
         til_phone = (CustomTextInputLayout) view.findViewById(R.id.til_phone);
         til_email = (CustomTextInputLayout) view.findViewById(R.id.til_email);
 
-        sp_class = (CustomSpinner) view.findViewById(R.id.sp_class);
+        sp_class = (CustomSpinner) view.findViewById(R.id.sp_course);
 
         et_studentName = (CustomInputEditText) view.findViewById(R.id.et_studentName);
         et_phone = (CustomInputEditText) view.findViewById(R.id.et_phone);

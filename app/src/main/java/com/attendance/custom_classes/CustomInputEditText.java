@@ -86,19 +86,19 @@ public class CustomInputEditText extends TextInputEditText {
         });
     }
 
-    public void setFocusChangeEmailId (CustomTextInputLayout textInputLayout) {
-        this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
-            if ( !hasFocus ) {
-                String _text = this.getText().toString();
-                if (_text.length() != 12) {
-                    textInputLayout.setErrorMessage("Please enter 12 digit aadhar no");
-                }
-                else {
-                    textInputLayout.setErrorEnabled(false);
-                }
-            }
-        });
-    }
+	public void setFocusChangeEmailId (CustomTextInputLayout textInputLayout) {
+		this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
+			if ( !hasFocus ) {
+				String _text = this.getText().toString();
+				if ( !_text.matches(emailPattern) ) {
+					textInputLayout.setErrorMessage("Please enter valid email id");
+				}
+				else {
+					textInputLayout.setErrorEnabled(false);
+				}
+			}
+		});
+	}
 
 
 	@Override

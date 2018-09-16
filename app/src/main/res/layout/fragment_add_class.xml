@@ -13,7 +13,7 @@
         android:textSize="14sp"
         android:background="@color/colorPrimary"
         android:drawableStart="@drawable/ic_back"
-        android:id="@+id/tvBack"
+        android:id="@+id/tvClassBack"
         android:text="@string/edit_class"
         android:layout_width="match_parent"
         android:layout_height="?actionBarSize" />

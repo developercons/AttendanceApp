@@ -35,7 +35,7 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
 		return new AddTeacherFragment();
 	}
 
-	public class TeacherData {
+	public class AddTeacherData {
 	    public String _teacherName;
 	    public String _phone;
 	    public String _email;
@@ -156,7 +156,7 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
             case R.id.btn_submit:
                 flag = true;
                 if(checkMandatoryFields()) {
-                    TeacherData data = new TeacherData();
+                    AddTeacherData data = new AddTeacherData();
                     data._teacherName = teacherName;
                     data._phone = phone;
                     data._email = email;

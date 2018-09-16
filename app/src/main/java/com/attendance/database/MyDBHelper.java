@@ -312,7 +312,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		}
 	}
 
-	public boolean insertTeacherData(AddTeacherFragment.TeacherData data) {
+	public boolean insertTeacherData(AddTeacherFragment.AddTeacherData data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(TEACHER_NAME, data._teacherName);
@@ -324,7 +324,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         return true;
 	}
 
-	public boolean insertClassData(AddTeacherFragment.TeacherData data) {
+	public boolean insertClassData(AddTeacherFragment.AddTeacherData data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(CLASS_COURSE_NAME, data._teacherName);
@@ -334,7 +334,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
         return true;
 	}
 
-	public boolean insertStudentData(AddTeacherFragment.TeacherData data) {
+	public boolean insertStudentData(AddTeacherFragment.AddTeacherData data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(STUDENT_CLASS, data._teacherName);

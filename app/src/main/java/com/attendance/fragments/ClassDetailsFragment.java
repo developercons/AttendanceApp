@@ -13,18 +13,18 @@ import android.view.ViewGroup;
 
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
-import com.attendance.adapters.EditClassDetailsAdapter;
-import com.attendance.data_models.ClassData;
+import com.attendance.adapters.ViewEditDetailsAdapter;
+import com.attendance.data_models.DataModel;
 
 import java.util.ArrayList;
 
 public class ClassDetailsFragment extends Fragment {
-
+	private static final String TAG = "CLASS_DETAILS";
 	private RecyclerView recyclerView;
 	private RecyclerView.Adapter adapter;
 	private RecyclerView.LayoutManager layoutManager;
 	private ViewDetailsActivity activity;
-	private ArrayList<ClassData> dataList;
+	private ArrayList<DataModel > dataList;
 
 	public static ClassDetailsFragment newInstance() {
 		return new ClassDetailsFragment();
@@ -43,23 +43,22 @@ public class ClassDetailsFragment extends Fragment {
 
 		dataList = new ArrayList<>();
 		//todo: dummy data
-		dataList.add(new ClassData("Arun", "Cse"));
-		dataList.add(new ClassData("Navjot", "Cse"));
-		dataList.add(new ClassData("Rupinder", "Ece"));
-		dataList.add(new ClassData("Harman", "Me"));
-		dataList.add(new ClassData("Chanchal", "Ece"));
-		dataList.add(new ClassData("Arvind", "Me"));
-		dataList.add(new ClassData("Savdeep Singh", "Me"));
-		dataList.add(new ClassData("Neeru", "Case"));
-		dataList.add(new ClassData("Neeru", "Case"));
-		dataList.add(new ClassData("Neeru", "Case"));
-		dataList.add(new ClassData("Neeru", "Case"));
+		dataList.add(new DataModel("Arun", "Cse"));
+		dataList.add(new DataModel("Navjot", "Cse"));
+		dataList.add(new DataModel("Rupinder", "Ece"));
+		dataList.add(new DataModel("Harman", "Me"));
+		dataList.add(new DataModel("Chanchal", "Ece"));
+		dataList.add(new DataModel("Arvind", "Me"));
+		dataList.add(new DataModel("Savdeep Singh", "Me"));
+		dataList.add(new DataModel("Neeru", "Case"));
+		dataList.add(new DataModel("Neeru", "Case"));
+		dataList.add(new DataModel("Neeru", "Case"));
+		dataList.add(new DataModel("Neeru", "Case"));
 
-		adapter = new EditClassDetailsAdapter(activity, dataList);
+		adapter = new ViewEditDetailsAdapter(activity, dataList, TAG);
 		recyclerView.setAdapter(adapter);
 		return view;
 	}
-
 
 	@Override
 	public void onAttach(Context context) {

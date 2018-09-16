@@ -4,18 +4,33 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
+    <TextView
+        android:visibility="gone"
+        android:gravity="center_vertical"
+        android:textColor="@color/white"
+        android:drawablePadding="10dp"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:background="@color/colorPrimary"
+        android:drawableStart="@drawable/ic_back"
+        android:id="@+id/tvTeacherBack"
+        android:text="@string/edit_class"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize" />
 
     <ScrollView
+        android:fillViewport="true"
+        android:layout_marginLeft="@dimen/activity_horizontal_margin"
+        android:layout_marginRight="@dimen/activity_horizontal_margin"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <LinearLayout
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_horizontal_margin"
+            android:layout_gravity="center"
             android:orientation="vertical">
 
             <com.attendance.custom_classes.CustomTextInputLayout
@@ -26,10 +41,7 @@
                 <com.attendance.custom_classes.CustomInputEditText
                     android:id="@+id/et_teacherName"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_height="wrap_content"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
             <com.attendance.custom_classes.CustomTextInputLayout
@@ -40,10 +52,7 @@
                 <com.attendance.custom_classes.CustomInputEditText
                     android:id="@+id/et_phone"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="wrap_content"
                     android:inputType="phone"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
@@ -55,10 +64,7 @@
                 <com.attendance.custom_classes.CustomInputEditText
                     android:id="@+id/et_email"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="wrap_content"
                     android:inputType="textEmailAddress"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
@@ -70,10 +76,7 @@
                 <com.attendance.custom_classes.CustomInputEditText
                     android:id="@+id/et_password"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginTop="10dp"
+                    android:layout_height="wrap_content"
                     android:inputType="textPassword"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
@@ -85,20 +88,21 @@
                 <com.attendance.custom_classes.CustomSpinner
                     android:id="@+id/sp_qualification"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:paddingStart="10dp"
-                    android:paddingEnd="10dp"
-                    android:layout_marginTop="10dp"/>
+                    android:layout_height="wrap_content"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
             <Button
                 android:id="@+id/btn_submit"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/submit_btn_txt"
-                android:textColor="@android:color/white"
                 android:layout_marginTop="10dp"
-                android:background="@drawable/button_bg"/>
+                android:paddingStart="5dp"
+                android:paddingEnd="5dp"
+                android:textSize="12sp"
+                android:text="@string/submit_btn_txt"
+                android:layout_gravity="center"
+                android:textColor="@android:color/white"
+                android:background="@drawable/button_bg"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp" />
         </LinearLayout>
 
     </ScrollView>
