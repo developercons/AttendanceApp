@@ -31,4 +31,12 @@ public class CustomTextInputLayout extends TextInputLayout {
         this.setError(errorMessage);
     }
 
+    public void setEnabled() {
+    	this.setErrorEnabled(true);
+    }
+
+    public void setDisabled() {
+    	this.setErrorEnabled(false);
+    }
+
 }

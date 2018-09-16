@@ -40,4 +40,8 @@ public class CustomSpinner extends MaterialBetterSpinner {
 		});
 	}
 
+	@Override
+	public String toString() {
+		return this.getText().toString().trim();
+	}
 }

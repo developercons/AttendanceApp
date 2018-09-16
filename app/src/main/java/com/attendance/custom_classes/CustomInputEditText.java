@@ -37,9 +37,7 @@ public class CustomInputEditText extends TextInputEditText {
         this.setTextColor(Color.BLACK);
     }
 
-	public String panExpression = "^[A-Z]{5}[0-9]{4}[A-Z]$";
 	public String phoneExpression = "^[6-9][0-9]{9}$";
-	public String ifscPattern ="^[A-Z]{4}0[0-9]{6}$";
 	//[a-zA-Z0-9\-]
 	public String emailPattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
 			"\\@" +
@@ -102,6 +100,11 @@ public class CustomInputEditText extends TextInputEditText {
         });
     }
 
+
+	@Override
+	public String toString() {
+		return this.getText().toString().trim();
+	}
 }
 
 
