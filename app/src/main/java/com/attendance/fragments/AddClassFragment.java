@@ -18,6 +18,7 @@ import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
+import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.Constants;
 
 public class AddClassFragment extends Fragment implements View.OnClickListener {
@@ -30,16 +31,26 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
 	String courseName, semester, teacherEmail, teacherName;
 	Button btn_submit;
 
+	MyDBHelper dbHelper;
+
 	boolean flag = false;
 
 	public static AddClassFragment newInstance() {
 		return new AddClassFragment();
 	}
 
+    public class ClassData {
+        public String _courseName;
+        public String _semester;
+        public String _teacherEmail;
+        public String _teacherName;
+    }
+
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		View view = inflater.inflate(R.layout.fragment_add_class, container, false);
+		dbHelper = MyDBHelper.getInstance(getActivity());
 
 		initViews(view);
 
@@ -47,9 +58,9 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
 
         textChangeListeners();
 
-        ArrayAdapter _adapterCourses = new ArrayAdapter(getActivity(), android.R.layout.activity_list_item,
+        ArrayAdapter _adapterCourses = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
                 ((AddDetailsActivity) getActivity()).coursesList);
-        ArrayAdapter _adapterSemester = new ArrayAdapter(getActivity(), android.R.layout.activity_list_item,
+        ArrayAdapter _adapterSemester = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
                 ((AddDetailsActivity) getActivity()).semesterList);
 
         //set Adapters
@@ -102,7 +113,7 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
     };
 
     public boolean checkMandatoryFields() {
-        int totalCount = 5 , count = 0;
+        int totalCount = 4 , count = 0;
         teacherName = et_teacherName.getText().toString().trim();
         courseName = sp_courseName.getText().toString().trim();
         semester = sp_semester.getText().toString().trim();
@@ -145,9 +156,27 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
             case R.id.btn_submit:
                 flag = true;
                 if(checkMandatoryFields()) {
-
+                    ClassData data = new ClassData();
+                    data._courseName = courseName;
+                    data._semester = semester;
+                    data._teacherEmail = teacherEmail;
+                    data._teacherName = teacherName;
+                    boolean inserted = dbHelper.insertClassData(data);
+                    if(inserted) {                        flag = false;
+                        setFieldsEmpty();
+                        Constants.showAlertDialog(getActivity(), "Data Inserted");
+                    } else {
+                        Constants.showAlertDialog(getActivity(), "Data Insertion Failed");
+                    }
                 }
                 break;
         }
+    }
+
+    private void setFieldsEmpty() {
+        sp_courseName.setText("");
+        sp_semester.setText("");
+        ac_teacherEmail.setText("");
+        et_teacherName.setText("");
     }
 }

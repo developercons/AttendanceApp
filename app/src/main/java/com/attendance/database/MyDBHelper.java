@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import com.attendance.fragments.AddClassFragment;
+import com.attendance.fragments.AddStudentFragment;
 import com.attendance.fragments.AddTeacherFragment;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
@@ -114,7 +116,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 //					break;
             }
 	    } catch ( Exception e ) {
-//    		e.getMessage();
+    		e.getMessage();
 	    }
     }
 
@@ -181,7 +183,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	    int index = 0;
 	    if ( columnList.size() > 0 ) {
 		    createQueryString.append("create table ").append(TableName).append("(").append(PRIMARY_ID)
-				    .append("integer primary key autoincrement, ");
+				    .append(" integer primary key autoincrement, ");
 		    for ( String columnName : columnList ) {
 			    index++;
 			    if ( index == columnList.size() ) {
@@ -320,29 +322,53 @@ public class MyDBHelper extends SQLiteOpenHelper {
         contentValues.put(TEACHER_EMAIL_ID, data._email);
         contentValues.put(TEACHER_PASSWORD, data._password);
         contentValues.put(TEACHER_QUALIFICATION, data._qualification);
-        db.insert(TEACHER_TABLE_NAME, null, contentValues);
-        return true;
+
+        Cursor cursor = null;
+        String query = "SELECT * FROM "+TEACHER_TABLE_NAME+" WHERE " + TEACHER_EMAIL_ID +"=?";
+		cursor= db.rawQuery(query,new String[]{data._email});
+		if(cursor.getCount() > 0) {
+			cursor.close();
+			return false;
+		} else {
+			db.insert(TEACHER_TABLE_NAME, null, contentValues);
+			cursor.close();
+			return true;
+		}
 	}
 
-	public boolean insertClassData(AddTeacherFragment.AddTeacherData data) {
+	/*public ArrayList<Teacher> getTeacherEmail() {
+
+	}*/
+
+	public boolean insertClassData(AddClassFragment.ClassData data) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put(CLASS_COURSE_NAME, data._teacherName);
-        contentValues.put(CLASS_SEMESTER, data._phone);
-        contentValues.put(CLASS_TEACHER_NAME, data._email);
+        contentValues.put(CLASS_COURSE_NAME, data._courseName);
+        contentValues.put(CLASS_SEMESTER, data._semester);
+        contentValues.put(CLASS_TEACHER_NAME, data._teacherEmail);
         db.insert(CLASS_TABLE_NAME, null, contentValues);
         return true;
 	}
 
-	public boolean insertStudentData(AddTeacherFragment.AddTeacherData data) {
-        SQLiteDatabase db = this.getWritableDatabase();
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(STUDENT_CLASS, data._teacherName);
-        contentValues.put(STUDENT_EMAIL_ID, data._phone);
-        contentValues.put(STUDENT_MOBILE_NO, data._email);
-        contentValues.put(STUDENT_NAME, data._password);
-        db.insert(STUDENT_TABLE_NAME, null, contentValues);
-        return true;
+	public boolean insertStudentData(AddStudentFragment.StudentData data) {
+		SQLiteDatabase db = this.getWritableDatabase();
+		ContentValues contentValues = new ContentValues();
+		contentValues.put(STUDENT_CLASS, data._className);
+		contentValues.put(STUDENT_EMAIL_ID, data._email);
+		contentValues.put(STUDENT_MOBILE_NO, data._phone);
+		contentValues.put(STUDENT_NAME, data._studentname);
+
+		Cursor cursor = null;
+		String query = "SELECT * FROM " + STUDENT_TABLE_NAME + " WHERE " + STUDENT_EMAIL_ID + "=?";
+		cursor = db.rawQuery(query, new String[]{data._email});
+		if (cursor.getCount() > 0) {
+			cursor.close();
+			return false;
+		} else {
+			db.insert(STUDENT_TABLE_NAME, null, contentValues);
+			cursor.close();
+			return true;
+		}
 	}
 }
 

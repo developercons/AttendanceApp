@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class Constants {
 
-    public final static String EMAIL_PATTERN = "";
+    public final static String EMAIL_PATTERN = "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[A-Za-z0-9]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";;
     public final static String PHONE_PATTERN = "";
     public final static String NAME = "";
 

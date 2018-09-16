@@ -17,6 +17,7 @@ import com.attendance.activities.AddDetailsActivity;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
+import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.Constants;
 
 public class AddStudentFragment extends Fragment implements View.OnClickListener {
@@ -26,6 +27,8 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
     CustomInputEditText et_studentName, et_phone, et_email;
     Button btn_submit;
 
+    MyDBHelper dbHelper;
+
     String className, studentName, phone, email;
     private boolean flag = false;
 
@@ -33,17 +36,25 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
 		return new AddStudentFragment();
 	}
 
+    public class StudentData {
+        public String _className;
+        public String _studentname;
+        public String _phone;
+        public String _email;
+    }
+
 	@Override
 	public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
 	                         Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View view = inflater.inflate(R.layout.fragment_add_student, container, false);
+		dbHelper = MyDBHelper.getInstance(getActivity());
 		initViews(view);
 
 		btn_submit.setOnClickListener(this);
         textChangeListeners();
 
-        ArrayAdapter _adapterCourses = new ArrayAdapter(getActivity(), android.R.layout.activity_list_item,
+        ArrayAdapter _adapterCourses = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
                 ((AddDetailsActivity) getActivity()).coursesList);
         sp_class.setAdapter(_adapterCourses);
         return view;
@@ -92,7 +103,7 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
     };
 
     public boolean checkMandatoryFields() {
-        int totalCount = 5 , count = 0;
+        int totalCount = 4 , count = 0;
         className = sp_class.getText().toString().trim();
         studentName = et_studentName.getText().toString().trim();
         phone = et_phone.getText().toString().trim();
@@ -112,11 +123,11 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
             til_studentName.setErrorMessage();
         }
 
-        if(!TextUtils.isEmpty(phone)) {
+        if(!TextUtils.isEmpty(phone) && phone.length() == 10) {
             til_phone.setErrorEnabled(false);
             count++;
         } else {
-            til_phone.setErrorMessage();
+            til_phone.setErrorMessage("Phone No. must be of 10 digit");
         }
 
         if(!TextUtils.isEmpty(email) && email.matches(Constants.EMAIL_PATTERN)) {
@@ -135,9 +146,28 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
             case R.id.btn_submit:
                 flag = true;
                 if(checkMandatoryFields()) {
-
+                    StudentData data = new StudentData();
+                    data._className = className;
+                    data._email = email;
+                    data._phone = phone;
+                    data._studentname = studentName;
+                    boolean inserted = dbHelper.insertStudentData(data);
+                    if(inserted) {
+                        flag = false;
+                        setFieldsEmpty();
+                        Constants.showAlertDialog(getActivity(), "Data Inserted");
+                    } else {
+                        Constants.showAlertDialog(getActivity(), "Email ID already exists");
+                    }
                 }
                 break;
         }
+    }
+
+    private void setFieldsEmpty() {
+        sp_class.setText("");
+        et_email.setText("");
+        et_phone.setText("");
+        et_studentName.setText("");
     }
 }

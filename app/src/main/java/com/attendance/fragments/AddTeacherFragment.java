@@ -120,11 +120,11 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
             til_teacherName.setErrorMessage();
         }
 
-        if(!TextUtils.isEmpty(phone)) {
+        if(!TextUtils.isEmpty(phone) && phone.length() == 10) {
             til_phone.setErrorEnabled(false);
             count++;
         } else {
-            til_phone.setErrorMessage();
+            til_phone.setErrorMessage("Phone No. must be of 10 digits");
         }
 
         if(!TextUtils.isEmpty(email) && email.matches(Constants.EMAIL_PATTERN)) {
@@ -164,6 +164,8 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
                     data._qualification = qualification;
                     boolean inserted = dbHelper.insertTeacherData(data);
                     if(inserted) {
+                        flag = false;
+                        setFieldsEmpty();
                         Constants.showAlertDialog(getActivity(), "Data Inserted");
                     } else {
                         Constants.showAlertDialog(getActivity(), "Data Insertion Failed");
@@ -171,5 +173,13 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
                 }
                 break;
         }
+    }
+
+    private void setFieldsEmpty() {
+        et_teacherName.setText("");
+        et_email.setText("");
+        et_phone.setText("");
+        et_password.setText("");
+        sp_qualification.setText("");
     }
 }
