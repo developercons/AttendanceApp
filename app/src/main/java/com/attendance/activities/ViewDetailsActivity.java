@@ -24,7 +24,7 @@ public class ViewDetailsActivity extends NavigationActivity {
 		super.onCreate(savedInstanceState);
 		View view = getLayoutInflater().inflate(R.layout.activity_view_details, clParent, false);
 		clParent.addView(view);
-		toolbar.setSubtitle(getString(R.string.view_details));
+		toolbar.setSubtitle(getString(R.string.view_edit_details));
 		setUpView();
 	}
 
