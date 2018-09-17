@@ -68,6 +68,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	private static final String ATTENDANCE_TABLE_NAME = "attendanceDetails";
 	private static final String ATTENDANCE_TEACHER_NAME = "teacherName";
 	private static final String ATTENDANCE_TEACHER_EMAIL_ID = "teacherEmailId";
+	private static final String ATTENDANCE_STUDENT_NAME = "studentName";
+	private static final String ATTENDANCE_STUDENT_EMAIL_ID = "studentEmailId";
 	private static final String ATTENDANCE_DATE = "attendanceDate";
 	private static final String ATTENDANCE_MINIMUM_PERCENTAGE = "minimumPercentage";
 	private static final String ATTENDANCE_CLASS_NAME = "className";
@@ -172,6 +174,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		if ( attendanceColumnList.size() == 0 ) {
 			attendanceColumnList.add(ATTENDANCE_TEACHER_NAME);
 			attendanceColumnList.add(ATTENDANCE_TEACHER_EMAIL_ID);
+			attendanceColumnList.add(ATTENDANCE_STUDENT_NAME);
+			attendanceColumnList.add(ATTENDANCE_STUDENT_EMAIL_ID);
 			attendanceColumnList.add(ATTENDANCE_DATE);
 			attendanceColumnList.add(ATTENDANCE_CLASS_NAME);
 			attendanceColumnList.add(ATTENDANCE_MINIMUM_PERCENTAGE);

@@ -6,4 +6,20 @@
     android:layout_height="match_parent"
     tools:context=".activities.DailyAttendanceActivity">
 
+    <TextView
+        android:id="@+id/tv_listHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textColor="@android:color/black"
+        android:textStyle="bold"
+        android:text="Student Attendance List"/>
+    <android.support.v7.widget.RecyclerView
+        app:layout_constraintTop_toBottomOf="@+id/tv_listHeader"
+        android:layout_marginTop="5dp"
+        android:id="@+id/recyclerView"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
 </android.support.constraint.ConstraintLayout>

@@ -109,6 +109,12 @@ public class NavigationActivity extends AppCompatActivity implements View.OnClic
 				startActivity(intent);
 				finish();
 				break;
+
+			case R.id.btnLogout:
+				intent = new Intent(this, LoginActivity.class);
+				startActivity(intent);
+				finish();
+				break;
 		}
 	}
 

@@ -4,6 +4,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
  * Created by Navjot Singh on 9/16/2018.
  */
 
-public class LoginAdapter extends FragmentPagerAdapter {
+public class LoginAdapter extends FragmentStatePagerAdapter {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
     private final List<String> mFragmentTitle = new ArrayList<>();
@@ -28,7 +29,7 @@ public class LoginAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 0;
+        return mFragmentList.size();
     }
 
     public void addFragment( Fragment fm, String title) {

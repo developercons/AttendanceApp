@@ -42,8 +42,6 @@ public class AttendanceListAdapter extends RecyclerView.Adapter<AttendanceListAd
 
             }
         });
-
-
     }
 
     @Override

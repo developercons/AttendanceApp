@@ -69,8 +69,6 @@ public class AddDetailsActivity extends NavigationActivity {
                 } else {
                     PermissionUtils.openSettings(this);
                 }
-
-
             }
         }
     }

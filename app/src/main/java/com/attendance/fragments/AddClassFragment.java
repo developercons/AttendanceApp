@@ -60,12 +60,13 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         if(isVisibleToUser) {
+            teacherEmailList.clear();
+            teacherAllDataList.clear();
             teacherAllDataList.addAll(MyDBHelper.getInstance(getActivity()).getTeacherEmail());
             for(Teacher teacher : MyDBHelper.getInstance(getActivity()).getTeacherEmail()) {
                 teacherEmailList.add(teacher.email);
             }
-            ArrayAdapter _adapterEmail = new ArrayAdapter(getActivity(), android.R.layout.simple_spinner_dropdown_item,
-                    teacherEmailList);
+            CustomAdapter _adapterEmail = new CustomAdapter(activity, ac_teacherEmail, teacherEmailList);
             ac_teacherEmail.setAdapter(null);
             ac_teacherEmail.setAdapter(_adapterEmail);
         }

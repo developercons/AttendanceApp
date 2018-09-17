@@ -32,16 +32,16 @@ public class DailyAttendanceActivity extends AppCompatActivity {
         initViews();
         setUpRecyclerView();
 
-        if(!dbHelper.getCourseList(courseName).isEmpty()) {
+        if(!dbHelper.getStudentList(courseName).isEmpty()) {
             studentList.clear();
-            studentList.addAll(dbHelper.getCourseList(courseName));
+            studentList.addAll(dbHelper.getStudentList(courseName));
             RecyclerView.Adapter adapter = new AttendanceListAdapter(this, studentList);
             recyclerView.setAdapter(adapter);
         }
     }
 
     private void initViews() {
-        recyclerView = (RecyclerView) findViewById(R.id.rcvCourseList);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
     }
 
     private void setUpRecyclerView() {
