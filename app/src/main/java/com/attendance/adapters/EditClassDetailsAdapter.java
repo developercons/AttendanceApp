@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
 import com.attendance.data_models.ClassData;
+import com.attendance.fragments.ClassDetailsFragment;
 import com.attendance.fragments.ClassDialogFragment;
 
 import java.util.ArrayList;
@@ -23,9 +24,11 @@ public class EditClassDetailsAdapter extends RecyclerView.Adapter<
 
 	private ArrayList<ClassData > dataList;
 	private Context context;
+	private ClassDetailsFragment fragment;
 
-	public EditClassDetailsAdapter(Context context, ArrayList< ClassData > data) {
+	public EditClassDetailsAdapter(Context context, ClassDetailsFragment fragment, ArrayList< ClassData > data) {
 		this.context = context;
+		this.fragment = fragment;
 		dataList = data;
 	}
 
@@ -45,6 +48,7 @@ public class EditClassDetailsAdapter extends RecyclerView.Adapter<
 			RowData data = new RowData();
 			FragmentManager manager = ((ViewDetailsActivity)context).getSupportFragmentManager();
 			ClassDialogFragment dialogFragment = new ClassDialogFragment();
+			dialogFragment.setTargetFragment(fragment, 1);
 			dialogFragment.show(manager, ClassDialogFragment.TAG);
 			data.setCourseName(holder.tvCourseName.getText().toString());
 			data.setSemester(holder.tvSemester.getText().toString());

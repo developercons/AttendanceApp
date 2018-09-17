@@ -53,7 +53,7 @@
 
     <!-- TODO: Add Student Strings-->
     <string name="class_txt">Class</string>
-    <string name="edit_class">Edit Class</string>
+    <string name="edit_class">Edit Class Details</string>
     <string name="check_mandatory">Please fill all the mandatory fields</string>
 
     <string name="email_msg">Invalid Email Address</string>
@@ -65,5 +65,7 @@
     <string name="prsent">Present</string>
     <string name="late">Late</string>
     <string name="sick">Sick</string>
+    <string name="edit_student">Edit Student Details</string>
+    <string name="edit_teacher_details">Edit Teacher Details</string>
 
 </resources>

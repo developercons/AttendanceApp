@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.TextUtils;
 
 import com.attendance.data_models.ClassData;
 import com.attendance.data_models.StudentData;
@@ -378,19 +379,27 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	}
 
 	public ArrayList<Teacher> getTeacherEmail() {
-		ArrayList<Teacher> _array_list = new ArrayList<>();
-		//SQLiteDatabase db = this.getReadableDatabase(ConstantStrings.DB_KEY);
+    	ArrayList<Teacher> _array_list = new ArrayList<>();
 		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor _cursor = db.query(TEACHER_TABLE_NAME, null, null, null, null, null, null);
-		_cursor.moveToFirst();
-		while(!_cursor.isAfterLast()) {
-			Teacher _data = new Teacher();
-			_data.email = _cursor.getString(_cursor.getColumnIndex(TEACHER_EMAIL_ID));
-			_data.name = _cursor.getString(_cursor.getColumnIndex(TEACHER_NAME));
-			_array_list.add(_data);
-			_cursor.moveToNext();
+		try {
+			Cursor _cursor = db.query(TEACHER_TABLE_NAME, null, null, null, null, null, null);
+			if ( _cursor.getCount() > 0 ) {
+				_cursor.moveToFirst();
+				while ( !_cursor.isAfterLast() ) {
+					Teacher _data = new Teacher();
+					_data.email = getString(_cursor,TEACHER_EMAIL_ID);
+					_data.name = getString(_cursor,TEACHER_NAME);
+					_array_list.add(_data);
+					_cursor.moveToNext();
+				}
+				_cursor.close();
+				return  _array_list;
+			}
+			_cursor.close();
+			return  _array_list;
+		} catch ( Exception e ) {
+			e.getMessage();
 		}
-		_cursor.close();
 		return  _array_list;
 	}
 
@@ -418,13 +427,13 @@ public class MyDBHelper extends SQLiteOpenHelper {
             String _selection = CLASS_TEACHER_EMAIL_ID +" =?";
             String[] _selectionArgs = {teacherEmail};
             Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, _selection, _selectionArgs, null, null, null);
-            if(cursor.getCount() > 0) {
-                cursor.moveToFirst();
-                while (!cursor.isAfterLast()) {
-                    courseList.add(getString(cursor, CLASS_COURSE_NAME).trim());
-                    cursor.moveToNext();
-                }
-            }
+	        if ( cursor.getCount() > 0 ) {
+		        cursor.moveToFirst();
+		        while ( !cursor.isAfterLast() ) {
+			        courseList.add(getString(cursor, CLASS_COURSE_NAME).trim());
+			        cursor.moveToNext();
+		        }
+	        }
             cursor.close();
         } catch ( Exception e ) {
             e.getMessage();
@@ -467,18 +476,23 @@ public class MyDBHelper extends SQLiteOpenHelper {
 			Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, _selection,
 					_selectionToArgs, null, null, null);
 			if ( cursor.getCount() > 0 ) {
+				cursor.moveToFirst();
 				ContentValues values =  new ContentValues();
-				values.put(CLASS_COURSE_NAME, data.getCourseName());
-				values.put(CLASS_SEMESTER, data.getSemester());
+//				values.put(CLASS_COURSE_NAME, data.getCourseName());
+//				values.put(CLASS_SEMESTER, data.getSemester());
 				values.put(CLASS_TEACHER_EMAIL_ID, data.getTeacherEmailId());
 				values.put(CLASS_TEACHER_NAME, data.getTeacherName());
 
-				String primaryId = getString(cursor, PRIMARY_ID);
-				String selection = primaryId + " = ?";
-				String[] selectionToArgs = {primaryId};
-				db.update(CLASS_TABLE_NAME, values, selection, selectionToArgs);
+				if ( !TextUtils.isEmpty(getString(cursor, PRIMARY_ID)) ) {
+					String primaryId = getString(cursor, PRIMARY_ID);
+					String selection = PRIMARY_ID + " = ?";
+					String[] selectionToArgs = {primaryId};
+					db.update(CLASS_TABLE_NAME, values, selection, selectionToArgs);
+					cursor.close();
+					return true;
+				}
 				cursor.close();
-				return true;
+				return false;
 			} else {
 				cursor.close();
 				return false;
@@ -579,6 +593,30 @@ public class MyDBHelper extends SQLiteOpenHelper {
 			e.getMessage();
 		}
 		return "";
+	}
+
+	public long getLong(Cursor cursor, String column) {
+		try {
+			int index = cursor.getColumnIndex(column);
+			if ( index != -1 ) {
+				return cursor.getLong(index);
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return -1;
+	}
+
+	public int getInt(Cursor cursor, String column) {
+		try {
+			int index = cursor.getColumnIndex(column);
+			if ( index != -1 ) {
+				return cursor.getInt(index);
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return -1;
 	}
 
 	private class JsonParsing<T> {

@@ -20,7 +20,7 @@ import com.attendance.database.MyDBHelper;
 import java.util.ArrayList;
 
 public class ClassDetailsFragment extends Fragment {
-	private static final String TAG = "CLASS_DETAILS";
+	public static final String TAG = "CLASS_DETAILS";
 	private RecyclerView recyclerView;
 	private RecyclerView.Adapter adapter;
 	private RecyclerView.LayoutManager layoutManager;
@@ -42,14 +42,17 @@ public class ClassDetailsFragment extends Fragment {
 		layoutManager = new LinearLayoutManager(activity);
 		recyclerView.setLayoutManager(layoutManager);
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
+		updateAdapter();
+		return view;
+	}
 
+	public void updateAdapter() {
 		if ( !dbHelper.getClassData().isEmpty() ) {
 			dataList.clear();
 			dataList.addAll(dbHelper.getClassData());
-			adapter = new EditClassDetailsAdapter(activity, dataList);
+			adapter = new EditClassDetailsAdapter(activity, this, dataList);
 			recyclerView.setAdapter(adapter);
 		}
-		return view;
 	}
 
 	@Override

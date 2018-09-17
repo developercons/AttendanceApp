@@ -2,7 +2,10 @@ package com.attendance.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.Fragment;
+import android.app.FragmentTransaction;
 import android.content.Context;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -15,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -26,9 +30,11 @@ import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
+import com.attendance.data_models.Teacher;
 import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.ConstantsString;
 
+import java.util.ArrayList;
 
 public class ClassDialogFragment extends DialogFragment implements View.OnClickListener {
 
@@ -36,13 +42,23 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	private ViewDetailsActivity activity;
 	private ViewGroup parent;
 	private CustomTextInputLayout til_courseName,til_semester, til_teacherEmail, til_teacherName;
-	private CustomSpinner sp_courseName,sp_semester;
 	private CustomAutoCompleteTextView ac_teacherEmail;
-	private CustomInputEditText et_teacherName;
+	private CustomInputEditText et_editCourseName, et_editSemester, et_teacherName;
 	private EditClassData data;
 	private RowData rowData;
 	private MyDBHelper dbHelper;
 	private boolean isFlag = false;
+	private ArrayList<Teacher> teacherDataList = new ArrayList<>();
+	private ArrayList<String> teacherEmailList = new ArrayList<>();
+
+	//[a-zA-Z0-9\-]
+	public String emailPattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
+			"\\@" +
+			"[a-zA-Z0-9]{0,64}" +
+			"(" +
+			"\\." +
+			"[a-zA-Z0-9]{0,25}" +
+			")+";
 
 	public ClassDialogFragment newInstance(ViewGroup parent) {
 		this.parent = parent;
@@ -54,7 +70,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 		LayoutInflater inflater = LayoutInflater.from(activity);
-		View view = inflater.inflate(R.layout.fragment_add_class, parent, false);
+		View view = inflater.inflate(R.layout.class_dialog, parent, false);
 		data = new EditClassData();
 		dbHelper = MyDBHelper.getInstance(activity);
 		setupView(view);
@@ -63,41 +79,51 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	}
 
 	private void setupView(View view) {
-		til_courseName = view.findViewById(R.id.til_courseName);
-		til_semester = view.findViewById(R.id.til_semester);
-		til_teacherEmail = view.findViewById(R.id.til_teacherEmail);
-		til_teacherName = view.findViewById(R.id.til_teacherName);
-		sp_courseName = view.findViewById(R.id.sp_courseName);
-		sp_semester = view.findViewById(R.id.sp_semester);
-		ac_teacherEmail = view.findViewById(R.id.ac_teacherEmail);
-		et_teacherName = view.findViewById(R.id.et_teacherName);
+		til_courseName = view.findViewById(R.id.til_editCourseName);
+		til_semester = view.findViewById(R.id.til_editSemester);
+		til_teacherEmail = view.findViewById(R.id.til_editTeacherEmail);
+		til_teacherName = view.findViewById(R.id.til_editTeacherName);
+		et_editCourseName = view.findViewById(R.id.et_editCourseName);
+		et_editSemester = view.findViewById(R.id.et_editSemester);
+		ac_teacherEmail = view.findViewById(R.id.ac_editTeacherEmail);
+		et_teacherName = view.findViewById(R.id.et_editTeacherName);
 		TextView tvBack = view.findViewById(R.id.tvClassBack);
-		Button btnSubmit = view.findViewById(R.id.btn_submit);
+		Button btnSubmit = view.findViewById(R.id.btn_editSubmit);
 		
 		// TODO: set focus change listener
-		sp_courseName.setFocusChange(til_courseName);
-		sp_semester.setFocusChange(til_semester);
+		et_editCourseName.setFocusChange(til_courseName);
+		et_editSemester.setFocusChange(til_semester);
 		ac_teacherEmail.setFocusChangeEmailId(til_teacherEmail);
 		et_teacherName.setFocusChange(til_teacherName);
 
 		//TODO: implements textWatcher on Fields
-		sp_courseName.addTextChangedListener(textWatcher);
-		sp_semester.addTextChangedListener(textWatcher);
+		et_editCourseName.addTextChangedListener(textWatcher);
+		et_editSemester.addTextChangedListener(textWatcher);
 		ac_teacherEmail.addTextChangedListener(textWatcher);
 		et_teacherName.addTextChangedListener(textWatcher);
 
 		//todo: implement click listener
 		tvBack.setOnClickListener(this);
 		btnSubmit.setOnClickListener(this);
-		tvBack.setVisibility(View.VISIBLE);
 
-		CustomAdapter coursesAdapter = new CustomAdapter
-				(activity, sp_courseName, ConstantsString.coursesList);
-		CustomAdapter semesterAdapter = new CustomAdapter
-						(activity, sp_semester, ConstantsString.semesterList);
-		sp_courseName.setAdapter(coursesAdapter);
-		sp_semester.setAdapter(semesterAdapter);
+		et_editCourseName.setText(rowData.getCourseName());
+		et_editSemester.setText(rowData.getSemester());
 
+		teacherDataList.addAll(dbHelper.getTeacherEmail());
+		if ( !teacherDataList.isEmpty() ) {
+			for ( Teacher email : teacherDataList ) {
+				teacherEmailList.add(email.email);
+			}
+			CustomAdapter emailAdapter = new CustomAdapter
+					(activity, ac_teacherEmail, teacherEmailList);
+			ac_teacherEmail.setAdapter(emailAdapter);
+			ac_teacherEmail.setOnItemClickListener((parent, view1, position, id) -> {
+				String _emailId = parent.getItemAtPosition(position).toString();
+				int _index = teacherEmailList.indexOf(_emailId);
+				Teacher _teacher = teacherDataList.get(_index);
+				et_teacherName.setText(_teacher.name);
+			});
+		}
 	}
 
 	@Override
@@ -107,16 +133,20 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 				dismiss();
 				break;
 
-			case R.id.btn_submit:
+			case R.id.btn_editSubmit:
 				isFlag = true;
 				if ( checkMandatoryFields() ) {
 					isFlag = false;
-					if ( dbHelper.updateClassData(data) ) {
-						dismiss();
-					}
-					else {
-						activity.toast("Database is not update");
-					}
+//					if ( dbHelper.updateClassData(data) ) {
+//						ClassDetailsFragment fragment = (ClassDetailsFragment ) getTargetFragment();
+//						if (fragment != null){
+//							fragment.updateAdapter();
+//						}
+//						dismiss();
+//					}
+//					else {
+//						activity.toast("Database is not update");
+//					}
 				}
 				else {
 					isFlag = false;
@@ -127,29 +157,14 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	}
 
 	public boolean checkMandatoryFields() {
-		int totalCount = 4;
+		int totalCount = 2;
 		int count = 0;
-		data.setCourseName(sp_courseName.toString());
-		data.setSemester(sp_semester.toString());
 		data.setTeacherEmailId(ac_teacherEmail.toString());
 		data.setTeacherName(et_teacherName.toString());
 		data.setRowData(rowData);
 
-		if (!TextUtils.isEmpty(data.getCourseName())) {
-			til_courseName.setDisabled();
-			count++;
-		} else {
-			til_courseName.setErrorMessage();
-		}
-
-		if (!TextUtils.isEmpty(data.getSemester())) {
-			til_semester.setDisabled();
-			count++;
-		} else {
-			til_semester.setErrorMessage();
-		}
-
-		if (!TextUtils.isEmpty(data.getTeacherEmailId())) {
+		if (!TextUtils.isEmpty(data.getTeacherEmailId())
+				&& data.getTeacherEmailId().matches(emailPattern)) {
 			til_teacherEmail.setDisabled();
 			count++;
 		} else {
@@ -169,7 +184,6 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		rowData = new RowData();
 		rowData.setCourseName(data.getCourseName());
 		rowData.setSemester(data.getSemester());
-//		activity.toast(data.getPosition());
 	}
 
 	private TextWatcher textWatcher = new TextWatcher() {
@@ -214,8 +228,6 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 
 	public class EditClassData {
 		private RowData rowData;
-		private String courseName;
-		private String semester;
 		private String teacherEmailId;
 		private String teacherName;
 
@@ -223,24 +235,8 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 			return rowData;
 		}
 
-		public void setRowData(RowData rowData) {
+		void setRowData(RowData rowData) {
 			this.rowData = rowData;
-		}
-
-		public String getCourseName() {
-			return courseName;
-		}
-
-		void setCourseName(String courseName) {
-			this.courseName = courseName;
-		}
-
-		public String getSemester() {
-			return semester;
-		}
-
-		void setSemester(String semester) {
-			this.semester = semester;
 		}
 
 		public String getTeacherEmailId() {
