@@ -406,6 +406,28 @@ public class MyDBHelper extends SQLiteOpenHelper {
         return false;
 	}
 
+	public ArrayList<String> getCourseList(String teacherEmail) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> courseList = new ArrayList<>();
+        try {
+            String[] _colToReturn = {"*"};
+            String _selection = CLASS_TEACHER_EMAIL_ID +" =?";
+            String[] _selectionArgs = {teacherEmail};
+            Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, _selection, _selectionArgs, null, null, null);
+            if(cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    courseList.add(getString(cursor, CLASS_COURSE_NAME).trim());
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+        } catch ( Exception e ) {
+            e.getMessage();
+        }
+        return courseList;
+    }
+
 	public ArrayList<ClassData > getClassData() {
 		ArrayList<ClassData> dataList = new ArrayList<>();
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -495,6 +517,28 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		}
 		return false;
 	}
+
+    public ArrayList<String> getStudentList(String courseName) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ArrayList<String> studentList = new ArrayList<>();
+        try {
+            String[] _colToReturn = {"*"};
+            String _selection = STUDENT_CLASS +" =?";
+            String[] _selectionArgs = {courseName};
+            Cursor cursor = db.query(STUDENT_TABLE_NAME, _colToReturn, _selection, _selectionArgs, null, null, null);
+            if(cursor.getCount() > 0) {
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    studentList.add(getString(cursor, STUDENT_NAME).trim());
+                    cursor.moveToNext();
+                }
+            }
+            cursor.close();
+        } catch ( Exception e ) {
+            e.getMessage();
+        }
+        return studentList;
+    }
 
 	public ArrayList<StudentData > getStudentData() {
 		ArrayList<StudentData> dataList = new ArrayList<>();

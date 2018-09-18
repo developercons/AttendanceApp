@@ -59,4 +59,11 @@
     <string name="email_msg">Invalid Email Address</string>
     <string name="student_name">Student Name</string>
 
+
+    <!-- TODO: Add Attendance Strings-->
+    <string name="absent">Absent</string>
+    <string name="prsent">Present</string>
+    <string name="late">Late</string>
+    <string name="sick">Sick</string>
+
 </resources>

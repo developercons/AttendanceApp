@@ -16,21 +16,24 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/MyTheme">
-        <activity android:name=".activities.NavigationActivity"/>
+        <activity android:name=".activities.NavigationActivity" />
         <activity
             android:name=".activities.DashboardActivity"
             android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".activities.LoginActivity"
             android:label="@string/title_activity_login" />
-        <activity android:name=".activities.AddDetailsActivity"/>
+        <activity android:name=".activities.AddDetailsActivity" />
         <activity android:name=".activities.ViewDetailsActivity" />
-        <activity android:name=".activities.ViewReportsActivity"/>
+        <activity android:name=".activities.ViewReportsActivity" />
+        <activity android:name=".activities.CourseListActivity" />
+        <activity android:name=".activities.DailyAttendanceActivity"></activity>
     </application>
 
 </manifest>

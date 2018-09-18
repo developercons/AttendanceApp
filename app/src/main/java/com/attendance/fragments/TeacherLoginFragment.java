@@ -15,6 +15,7 @@ import android.widget.Button;
 
 import com.attendance.R;
 import com.attendance.activities.AddDetailsActivity;
+import com.attendance.activities.CourseListActivity;
 import com.attendance.adapters.CustomAdapter;
 import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
@@ -149,7 +150,8 @@ public class TeacherLoginFragment extends Fragment implements View.OnClickListen
                     data._password = password;
                     boolean inserted = dbHelper.checkTeacherEmail(data);
                     if(inserted) {
-                        Intent intent = new Intent(getActivity(), AddDetailsActivity.class);
+                        Intent intent = new Intent(getActivity(), CourseListActivity.class);
+                        intent.putExtra("TEACHER_EMAIL", email);
                         startActivity(intent);
                         getActivity().finish();
                     } else {
