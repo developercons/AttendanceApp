@@ -478,8 +478,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
 			if ( cursor.getCount() > 0 ) {
 				cursor.moveToFirst();
 				ContentValues values =  new ContentValues();
-//				values.put(CLASS_COURSE_NAME, data.getCourseName());
-//				values.put(CLASS_SEMESTER, data.getSemester());
 				values.put(CLASS_TEACHER_EMAIL_ID, data.getTeacherEmailId());
 				values.put(CLASS_TEACHER_NAME, data.getTeacherName());
 
