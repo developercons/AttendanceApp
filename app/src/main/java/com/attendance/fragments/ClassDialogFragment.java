@@ -51,15 +51,6 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	private ArrayList<Teacher> teacherDataList = new ArrayList<>();
 	private ArrayList<String> teacherEmailList = new ArrayList<>();
 
-	//[a-zA-Z0-9\-]
-	public String emailPattern = "[a-zA-Z0-9\\+\\.\\_\\%\\-\\+]{1,256}" +
-			"\\@" +
-			"[a-zA-Z0-9]{0,64}" +
-			"(" +
-			"\\." +
-			"[a-zA-Z0-9]{0,25}" +
-			")+";
-
 	public ClassDialogFragment newInstance(ViewGroup parent) {
 		this.parent = parent;
 		return new ClassDialogFragment();
@@ -89,7 +80,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		et_teacherName = view.findViewById(R.id.et_editTeacherName);
 		TextView tvBack = view.findViewById(R.id.tvClassBack);
 		Button btnSubmit = view.findViewById(R.id.btn_editSubmit);
-		
+
 		// TODO: set focus change listener
 		et_editCourseName.setFocusChange(til_courseName);
 		et_editSemester.setFocusChange(til_semester);
@@ -137,16 +128,16 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 				isFlag = true;
 				if ( checkMandatoryFields() ) {
 					isFlag = false;
-//					if ( dbHelper.updateClassData(data) ) {
-//						ClassDetailsFragment fragment = (ClassDetailsFragment ) getTargetFragment();
-//						if (fragment != null){
-//							fragment.updateAdapter();
-//						}
-//						dismiss();
-//					}
-//					else {
-//						activity.toast("Database is not update");
-//					}
+					if ( dbHelper.updateClassData(data) ) {
+						ClassDetailsFragment fragment = (ClassDetailsFragment ) getTargetFragment();
+						if (fragment != null){
+							fragment.updateAdapter();
+						}
+						dismiss();
+					}
+					else {
+						activity.toast("Database is not update");
+					}
 				}
 				else {
 					isFlag = false;
@@ -164,15 +155,15 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		data.setRowData(rowData);
 
 		if (!TextUtils.isEmpty(data.getTeacherEmailId())
-				&& data.getTeacherEmailId().matches(emailPattern)) {
-			til_teacherEmail.setDisabled();
+				&& data.getTeacherEmailId().matches(ac_teacherEmail.emailPattern)) {
+			til_teacherEmail.setErrorDisabled();
 			count++;
 		} else {
 			til_teacherEmail.setErrorMessage();
 		}
 
 		if (!TextUtils.isEmpty(data.getTeacherName())) {
-			til_teacherName.setDisabled();
+			til_teacherName.setErrorDisabled();
 			count++;
 		} else {
 			til_teacherName.setErrorMessage();

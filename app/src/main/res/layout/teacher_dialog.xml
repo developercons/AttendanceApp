@@ -5,12 +5,11 @@
     android:orientation="vertical">
 
     <TextView
-        android:visibility="gone"
         android:gravity="center_vertical"
         android:textColor="@color/white"
         android:drawablePadding="10dp"
         android:textStyle="bold"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:background="@color/colorPrimary"
         android:drawableStart="@drawable/ic_back"
         android:id="@+id/tvTeacherBack"
@@ -34,65 +33,41 @@
             android:orientation="vertical">
 
             <com.attendance.custom_classes.CustomTextInputLayout
-                android:id="@+id/til_teacherName"
+                android:id="@+id/til_editTeacherName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/name">
                 <com.attendance.custom_classes.CustomInputEditText
-                    android:id="@+id/et_teacherName"
+                    android:id="@+id/et_editTeacherName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
             <com.attendance.custom_classes.CustomTextInputLayout
-                android:id="@+id/til_phone"
+                android:id="@+id/til_editPhone"
                 android:layout_width="match_parent"
                 android:hint="@string/contact"
                 android:layout_height="wrap_content">
                 <com.attendance.custom_classes.CustomInputEditText
-                    android:id="@+id/et_phone"
+                    android:id="@+id/et_editPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
             <com.attendance.custom_classes.CustomTextInputLayout
-                android:id="@+id/til_email"
-                android:layout_width="match_parent"
-                android:hint="@string/email"
-                android:layout_height="wrap_content">
-                <com.attendance.custom_classes.CustomInputEditText
-                    android:id="@+id/et_email"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
-            </com.attendance.custom_classes.CustomTextInputLayout>
-
-            <com.attendance.custom_classes.CustomTextInputLayout
-                android:id="@+id/til_password"
-                android:layout_width="match_parent"
-                android:hint="@string/password"
-                android:layout_height="wrap_content">
-                <com.attendance.custom_classes.CustomInputEditText
-                    android:id="@+id/et_password"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"/>
-            </com.attendance.custom_classes.CustomTextInputLayout>
-
-            <com.attendance.custom_classes.CustomTextInputLayout
-                android:id="@+id/til_qualification"
+                android:id="@+id/til_editQualification"
                 android:layout_width="match_parent"
                 android:hint="@string/qualification"
                 android:layout_height="wrap_content">
                 <com.attendance.custom_classes.CustomSpinner
-                    android:id="@+id/sp_qualification"
+                    android:id="@+id/sp_editQualification"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
 
             <Button
-                android:id="@+id/btn_submit"
+                android:id="@+id/btn_editSubmit"
                 android:layout_marginTop="10dp"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
