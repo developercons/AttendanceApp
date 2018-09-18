@@ -66,7 +66,7 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
             for(Teacher teacher : MyDBHelper.getInstance(getActivity()).getTeacherEmail()) {
                 teacherEmailList.add(teacher.email);
             }
-            CustomAdapter _adapterEmail = new CustomAdapter(activity, ac_teacherEmail, teacherEmailList);
+            CustomAdapter _adapterEmail = new CustomAdapter(activity, teacherEmailList);
             ac_teacherEmail.setAdapter(null);
             ac_teacherEmail.setAdapter(_adapterEmail);
         }
@@ -83,8 +83,8 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
 		btn_submit.setOnClickListener(this);
 
         textChangeListeners();
-		CustomAdapter coursesAdapter = new CustomAdapter(activity, sp_courseName, ConstantsString.coursesList);
-		CustomAdapter semesterAdapter = new CustomAdapter(activity, sp_courseName, ConstantsString.semesterList);
+		CustomAdapter coursesAdapter = new CustomAdapter(activity, ConstantsString.coursesList);
+		CustomAdapter semesterAdapter = new CustomAdapter(activity, ConstantsString.semesterList);
 
         //set Adapters
         sp_courseName.setAdapter(coursesAdapter);

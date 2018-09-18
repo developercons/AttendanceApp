@@ -39,6 +39,9 @@
                 android:hint="@string/name">
                 <com.attendance.custom_classes.CustomInputEditText
                     android:id="@+id/et_editTeacherName"
+                    android:singleLine="true"
+                    android:inputType="textPersonName"
+                    android:imeOptions="actionNext"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.attendance.custom_classes.CustomTextInputLayout>
@@ -50,6 +53,7 @@
                 android:layout_height="wrap_content">
                 <com.attendance.custom_classes.CustomInputEditText
                     android:id="@+id/et_editPhone"
+                    android:maxLength="10"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"/>

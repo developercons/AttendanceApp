@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -33,7 +32,7 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 	public static final String TAG = "STUDENT_DETAILS_UPDATE";
 	private ViewDetailsActivity activity;
 	private ViewGroup parent;
-	private CustomTextInputLayout til_studentName, til_class, til_phone;
+	private CustomTextInputLayout til_studentName, til_course, til_phone;
 	private CustomInputEditText et_studentName, et_phone;
 	private CustomSpinner sp_course;
 	private boolean isFlags = false;
@@ -61,17 +60,17 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 
 	private void setupView(View view) {
 		til_studentName = view.findViewById(R.id.til_editStudentName);
-		til_class = view.findViewById(R.id.til_editClass);
+		til_course = view.findViewById(R.id.til_editCourseName);
 		til_phone = view.findViewById(R.id.til_editPhone);
 
 		et_studentName = view.findViewById(R.id.et_editStudentName);
 		et_phone = view.findViewById(R.id.et_editPhone);
-		sp_course = view.findViewById(R.id.sp_editCourse);
+		sp_course = view.findViewById(R.id.sp_editCourseName);
 
 		//todo: implements set on focus change listener
 		et_studentName.setFocusChange(til_studentName);
 		et_phone.setFocusChangeMobileNo(til_phone);
-		sp_course.setFocusChange(til_class);
+		sp_course.setFocusChange(til_course);
 
 		//todo: implements textWatcher on fields
 		et_studentName.addTextChangedListener(textWatcher);
@@ -85,7 +84,7 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 		tvBack.setOnClickListener(this);
 		btnSubmit.setOnClickListener(this);
 
-		CustomAdapter adapter = new CustomAdapter(activity, sp_course, ConstantsString.coursesList);
+		CustomAdapter adapter = new CustomAdapter(activity, ConstantsString.coursesList);
 		sp_course.setAdapter(adapter);
 	}
 
@@ -118,38 +117,20 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 	}
 
 	private boolean checkMandatoryFields() {
-		int count = 0;
-		int totalCount = 3;
-
 		studentData.setStudentName(et_studentName.toString());
 		studentData.setStudentPhone(et_phone.toString());
 		studentData.setStudentCourseName(sp_course.toString());
 		studentData.setStudentData(rowData);
-
-		if ( !TextUtils.isEmpty(studentData.getStudentName()) ) {
-			til_studentName.setErrorDisabled();
-			count++;
-		}
-		else {
-			til_studentName.setErrorMessage();
-		}
-
-		if ( !TextUtils.isEmpty(studentData.getStudentPhone()) ) {
+		
+		if (et_phone.toString().matches(et_phone.phoneExpression)){
 			til_phone.setErrorDisabled();
-			count++;
+		} else {
+			til_phone.setErrorMessage("Please enter valid mobile no.");
 		}
-		else {
-			til_phone.setErrorMessage();
-		}
-
-		if ( !TextUtils.isEmpty(studentData.getStudentCourseName()) ) {
-			til_class.setErrorDisabled();
-			count++;
-		}
-		else {
-			til_class.setErrorMessage();
-		}
-		return count != 0 && count == totalCount;
+		et_studentName.isFieldEmpty(til_studentName);
+		sp_course.isFieldEmpty(til_course);
+		return et_phone.toString().matches(et_phone.phoneExpression) &&
+				et_phone.isEmpty() && et_studentName.isEmpty() && sp_course.isEmpty();
 	}
 
 	public void rowData(EditStudentDetailsAdapter.RowStudentData data) {

@@ -64,8 +64,7 @@ public class TeacherLoginFragment extends Fragment implements View.OnClickListen
             for(Teacher teacher : MyDBHelper.getInstance(getActivity()).getTeacherEmail()) {
                 teacherEmailList.add(teacher.email);
             }
-	        CustomAdapter adapter = new CustomAdapter(getActivity(),ac_teacherEmail, teacherEmailList);
-            ac_teacherEmail.setAdapter(null);
+	        CustomAdapter adapter = new CustomAdapter(getActivity(), teacherEmailList);
             ac_teacherEmail.setAdapter(adapter);
         }
     }

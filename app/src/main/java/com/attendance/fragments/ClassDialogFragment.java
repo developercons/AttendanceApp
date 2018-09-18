@@ -2,10 +2,7 @@ package com.attendance.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
@@ -18,7 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -28,11 +24,9 @@ import com.attendance.adapters.CustomAdapter;
 import com.attendance.adapters.EditClassDetailsAdapter;
 import com.attendance.custom_classes.CustomAutoCompleteTextView;
 import com.attendance.custom_classes.CustomInputEditText;
-import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
 import com.attendance.data_models.Teacher;
 import com.attendance.database.MyDBHelper;
-import com.attendance.helper_classes.ConstantsString;
 
 import java.util.ArrayList;
 
@@ -105,8 +99,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 			for ( Teacher email : teacherDataList ) {
 				teacherEmailList.add(email.email);
 			}
-			CustomAdapter emailAdapter = new CustomAdapter
-					(activity, ac_teacherEmail, teacherEmailList);
+			CustomAdapter emailAdapter = new CustomAdapter(activity, teacherEmailList);
 			ac_teacherEmail.setAdapter(emailAdapter);
 			ac_teacherEmail.setOnItemClickListener((parent, view1, position, id) -> {
 				String _emailId = parent.getItemAtPosition(position).toString();
@@ -148,27 +141,17 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	}
 
 	public boolean checkMandatoryFields() {
-		int totalCount = 2;
-		int count = 0;
 		classData.setTeacherEmailId(ac_teacherEmail.toString());
 		classData.setTeacherName(et_teacherName.toString());
 		classData.setRowData(rowData);
-
-		if (!TextUtils.isEmpty(classData.getTeacherEmailId())
-				&& classData.getTeacherEmailId().matches(ac_teacherEmail.emailPattern)) {
+		boolean isEmailId = ac_teacherEmail.toString().matches(ac_teacherEmail.emailPattern);
+		if ( isEmailId ) {
 			til_teacherEmail.setErrorDisabled();
-			count++;
 		} else {
-			til_teacherEmail.setErrorMessage();
+			til_teacherEmail.setErrorMessage("Please enter valid email id");
 		}
-
-		if (!TextUtils.isEmpty(classData.getTeacherName())) {
-			til_teacherName.setErrorDisabled();
-			count++;
-		} else {
-			til_teacherName.setErrorMessage();
-		}
-		return count != 0 && count == totalCount;
+		et_teacherName.isFieldEmpty(til_teacherName);
+		return  isEmailId && et_teacherName.isEmpty();
 	}
 
 	public void rowClassData(EditClassDetailsAdapter.RowData data) {

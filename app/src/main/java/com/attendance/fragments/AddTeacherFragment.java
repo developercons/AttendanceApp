@@ -49,8 +49,7 @@ public class AddTeacherFragment extends Fragment implements View.OnClickListener
 		btn_submit.setOnClickListener(this);
 
 		textChangeListeners();
-		CustomAdapter adapter = new CustomAdapter
-				(activity, sp_qualification, ConstantsString.qualificationList);
+		CustomAdapter adapter = new CustomAdapter(activity, ConstantsString.qualificationList);
         sp_qualification.setAdapter(adapter);
 
 		return view;

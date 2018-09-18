@@ -49,7 +49,7 @@ public class AddStudentFragment extends Fragment implements View.OnClickListener
 
 		btn_submit.setOnClickListener(this);
         textChangeListeners();
-		CustomAdapter coursesAdapter = new CustomAdapter(activity, sp_class, ConstantsString.coursesList);
+		CustomAdapter coursesAdapter = new CustomAdapter(activity, ConstantsString.coursesList);
         sp_class.setAdapter(coursesAdapter);
         return view;
     }

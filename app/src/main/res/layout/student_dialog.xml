@@ -44,12 +44,12 @@
             </com.attendance.custom_classes.CustomTextInputLayout>
 
             <com.attendance.custom_classes.CustomTextInputLayout
-                android:id="@+id/til_editClass"
+                android:id="@+id/til_editCourseName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/course_name">
                 <com.attendance.custom_classes.CustomSpinner
-                    android:id="@+id/sp_editCourse"
+                    android:id="@+id/sp_editCourseName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.attendance.custom_classes.CustomTextInputLayout>

@@ -68,5 +68,13 @@
     <string name="total">Total Student</string>
     <string name="edit_student">Edit Student Details</string>
     <string name="edit_teacher_details">Edit Teacher Details</string>
+    <string name="student_email_id">Student Email Id</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="_1_absent">1. Absent</string>
+    <string name="_2_sick">2. Sick</string>
+    <string name="_3_late">3. Late</string>
+    <string name="_4_present">4. Present</string>
+    <string name="report">Report</string>
 
 </resources>

@@ -6,8 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.View;
+import android.view.Gravity;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -15,15 +14,12 @@ import android.widget.TextView;
 
 import com.attendance.R;
 import com.attendance.adapters.AttendanceListAdapter;
-import com.attendance.adapters.CourseListAdapter;
 import com.attendance.data_models.Student;
 import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.ConstantsString;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 public class DailyAttendanceActivity extends AppCompatActivity {
@@ -106,8 +102,8 @@ public class DailyAttendanceActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        btn_submit = (Button) findViewById(R.id.btn_submit);
+        recyclerView = findViewById(R.id.recyclerView);
+        btn_submit = findViewById(R.id.btn_submit);
     }
 
     private void setUpRecyclerView() {
@@ -123,15 +119,15 @@ public class DailyAttendanceActivity extends AppCompatActivity {
 
     private void showDialogBox() {
         // custom dialog
-        final Dialog dialog = new Dialog(DailyAttendanceActivity.this);
+        Dialog dialog = new Dialog(DailyAttendanceActivity.this);
         dialog.setContentView(R.layout.attendance_dialog);
 
         // set the custom dialog components - text, image and button
-        TextView present = (TextView) dialog.findViewById(R.id.tv_present);
-        TextView absent = (TextView) dialog.findViewById(R.id.tv_absent);
-        TextView late = (TextView) dialog.findViewById(R.id.tv_late);
-        TextView sick = (TextView) dialog.findViewById(R.id.tv_sick);
-        TextView totalStudent = (TextView) dialog.findViewById(R.id.tv_totalStudent);
+        TextView present = dialog.findViewById(R.id.tv_present);
+        TextView absent = dialog.findViewById(R.id.tv_absent);
+        TextView late = dialog.findViewById(R.id.tv_late);
+        TextView sick = dialog.findViewById(R.id.tv_sick);
+        TextView totalStudent = dialog.findViewById(R.id.tv_totalStudent);
 
         present.setText(String.valueOf(presentCounter));
         absent.setText(String.valueOf(absentCounter));
@@ -142,35 +138,36 @@ public class DailyAttendanceActivity extends AppCompatActivity {
 
         Button dialogButton = dialog.findViewById(R.id.dialog_btn);
         // if button is clicked, close the custom dialog
-        dialogButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AttendanceData data = new AttendanceData();
-                for(String hashMapKey: dataHashMap.keySet()) {
-                    data.course = courseName;
-                    data.studentName = dataHashMap.get(hashMapKey).getStudentName();
-                    data.studentEmail = dataHashMap.get(hashMapKey).getStudentEmail();
-                    data.attendanceStatus = dataHashMap.get(hashMapKey).getAttendanceStatus();
-                    data.totalStudent = totalStudent.getText().toString().trim();
-                    data.day = String.valueOf(day);
-                    data.month = String.valueOf(month);
-                    data.year = String.valueOf(year);
-                    boolean check = MyDBHelper.getInstance(DailyAttendanceActivity.this).insertAttendanceData(data);
+        dialogButton.setOnClickListener(v -> {
+            AttendanceData data = new AttendanceData();
+	        for ( String hashMapKey : dataHashMap.keySet() ) {
+		        data.course = courseName;
+		        data.studentName = dataHashMap.get(hashMapKey).getStudentName();
+		        data.studentEmail = dataHashMap.get(hashMapKey).getStudentEmail();
+		        data.attendanceStatus = dataHashMap.get(hashMapKey).getAttendanceStatus();
+		        data.totalStudent = totalStudent.getText().toString().trim();
+		        data.day = String.valueOf(day);
+		        data.month = String.valueOf(month);
+		        data.year = String.valueOf(year);
+		        boolean check = MyDBHelper.getInstance(DailyAttendanceActivity.this)
+				        .insertAttendanceData(data);
 
-                    if(check) {
-                        ConstantsString.showAlertDialog(DailyAttendanceActivity.this, "Data Inserted");
-                    } else {
-                        ConstantsString.showAlertDialog(DailyAttendanceActivity.this, "Data Insertion Failed");
-                    }
-                }
-                dialog.dismiss();
-            }
+		        if ( check ) {
+			        ConstantsString.showAlertDialog(DailyAttendanceActivity.this, "Data Inserted");
+		        }
+		        else {
+			        ConstantsString.showAlertDialog(DailyAttendanceActivity.this, "Data Insertion " +
+					        "Failed");
+		        }
+	        }
+            dialog.dismiss();
         });
 
         dialog.show();
         Window window = dialog.getWindow();
         if (window != null) {
             window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+            window.setGravity(Gravity.CENTER);
         }
     }
 }

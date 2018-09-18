@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -86,8 +85,7 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 		tvBack.setOnClickListener(this);
 		btnSubmit.setOnClickListener(this);
 
-		CustomAdapter adapter = new CustomAdapter
-				(activity, sp_qualification, ConstantsString.qualificationList);
+		CustomAdapter adapter = new CustomAdapter(activity, ConstantsString.qualificationList);
 		sp_qualification.setAdapter(adapter);
 	}
 
@@ -128,34 +126,19 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 	}
 
 	private boolean checkMandatoryFields() {
-		int totalCount = 3;
-		int count = 0;
 		teacherData.setTeacherName(et_teacherName.toString());
 		teacherData.setPhone(et_phone.toString());
 		teacherData.setQualification(sp_qualification.toString());
 		teacherData.setRowData(rowData);
-
-		if ( !TextUtils.isEmpty(teacherData.getTeacherName()) ) {
-			til_teacherName.setErrorDisabled();
-			count++;
-		} else {
-			til_teacherName.setErrorMessage();
-		}
-
-		if ( !TextUtils.isEmpty(teacherData.getPhone()) ) {
+		if (et_phone.toString().matches(et_phone.phoneExpression)){
 			til_phone.setErrorDisabled();
-			count++;
 		} else {
-			til_phone.setErrorMessage();
+			til_phone.setErrorMessage("Please enter valid mobile no");
 		}
-
-		if ( !TextUtils.isEmpty(teacherData.getQualification()) ) {
-			til_qualification.setErrorDisabled();
-			count++;
-		} else {
-			til_qualification.setErrorMessage();
-		}
-		return count != 0 && count == totalCount;
+		et_teacherName.isFieldEmpty(til_teacherName);
+		sp_qualification.isFieldEmpty(til_qualification);
+		return  et_phone.toString().matches(et_phone.phoneExpression) &&
+		et_teacherName.isEmpty() && et_phone.isEmpty() && sp_qualification.isEmpty();
 	}
 
 	public class RowData{

@@ -17,6 +17,7 @@ import com.attendance.fragments.AddClassFragment;
 import com.attendance.fragments.AddStudentFragment;
 import com.attendance.fragments.AddTeacherFragment;
 import com.attendance.fragments.StudentDialogFragment;
+import com.attendance.fragments.StudentViewReportFragment;
 import com.attendance.fragments.TeacherDialogFragment;
 import com.attendance.fragments.TeacherLoginFragment;
 import com.attendance.fragments.ClassDialogFragment;
@@ -312,6 +313,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE " + tableName);
     }
 
+
+
 	public boolean insertTeacherData(AddTeacherFragment.AddTeacherData data) {
     	try {
 		    SQLiteDatabase db = this.getWritableDatabase();
@@ -415,18 +418,24 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean checkTeacherEmail(TeacherLoginFragment.TeacherLoginData data) {
-
-		SQLiteDatabase db = this.getReadableDatabase();
-		Cursor cursor = null;
-		String query = "SELECT * FROM "+TEACHER_TABLE_NAME+" WHERE " + TEACHER_EMAIL_ID +"=?";
-		cursor= db.rawQuery(query,new String[]{data._email});
-		if(cursor.getCount() > 0) {
-			cursor.close();
-			return true;
-		} else {
-			cursor.close();
-			return false;
-		}
+    	try {
+		    SQLiteDatabase db = this.getReadableDatabase();
+		    String selection = TEACHER_EMAIL_ID + "=?";
+		    String[] selectionArgs = {data._email};
+		    String[] colToReturn = {"*"};
+		    Cursor cursor = db.query(TEACHER_TABLE_NAME, colToReturn,  selection, selectionArgs,
+				    null, null, null);
+		    if ( cursor.getCount() > 0 ) {
+			    cursor.close();
+			    return true;
+		    } else {
+			    cursor.close();
+			    return false;
+		    }
+	    } catch ( Exception e ) {
+    		e.getMessage();
+	    }
+	    return false;
 	}
 
 	public ArrayList<Teacher> getTeacherEmail() {
@@ -511,6 +520,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
 				cursor.close();
 				return dataList;
 			}
+			cursor.close();
+			return dataList;
 		} catch ( Exception e ) {
 			e.getMessage();
 		}
@@ -567,9 +578,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
 			Cursor cursor = db.query(STUDENT_TABLE_NAME, _colToReturn, _selection,
 					_selectionToArgs, null, null, null);
 
-//		Cursor cursor = null;
-//		String query = "SELECT * FROM " + STUDENT_TABLE_NAME + " WHERE " + STUDENT_EMAIL_ID + "=?";
-//		cursor = db.rawQuery(query, new String[]{data._email});
 			if ( cursor.getCount() > 0 ) {
 				cursor.close();
 				return false;
@@ -637,6 +645,30 @@ public class MyDBHelper extends SQLiteOpenHelper {
         return studentList;
     }
 
+	public ArrayList<String> getStudentEmailId() {
+    	ArrayList<String> emailIdList = new ArrayList<>();
+    	SQLiteDatabase db = this.getReadableDatabase();
+    	try {
+    		String[] _colToReturn = {STUDENT_EMAIL_ID};
+    		Cursor cursor = db.query(STUDENT_TABLE_NAME, _colToReturn, null,
+				    null, null, null, null);
+		    if ( cursor.getCount() > 0 ) {
+		    	cursor.moveToFirst();
+			    while ( !cursor.isAfterLast() ) {
+			    	emailIdList.add(getString(cursor, STUDENT_EMAIL_ID));
+			    	cursor.moveToNext();
+			    }
+			    cursor.close();
+			    return  emailIdList;
+		    }
+		    cursor.close();
+		    return  emailIdList;
+	    } catch ( Exception e ) {
+    		e.getMessage();
+	    }
+	    return emailIdList;
+    }
+
 	public ArrayList<StudentData > getStudentData() {
 		ArrayList<StudentData> dataList = new ArrayList<>();
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -682,6 +714,12 @@ public class MyDBHelper extends SQLiteOpenHelper {
             e.getMessage();
         }
         return false;
+    }
+
+    public ArrayList<String> getStudentAttendanceReport(StudentViewReportFragment.StudentReport
+		                                                        report){
+    	ArrayList<String> list = new ArrayList<>();
+    	return list;
     }
 
 	public String getString(Cursor cursor, String column) {

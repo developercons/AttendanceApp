@@ -1,6 +1,5 @@
 package com.attendance.adapters;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
@@ -10,23 +9,20 @@ import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.TextView;
 
-
 import com.attendance.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class CustomAdapter extends ArrayAdapter<String> {
-	private final View parent;
 	private Context context;
 	private final ArrayList<String> srcList;
 	private final ArrayList<String> srcListAll;
 	private final ArrayList<String> srcListSuggestion;
 
-	public CustomAdapter(Context context, View parentView, ArrayList<String> srcList) {
+	public CustomAdapter(Context context, ArrayList<String> srcList) {
 		super(context, 0, srcList);
 		this.context = context;
-		parent = parentView;
 		this.srcList = new ArrayList<>(srcList);
 		this.srcListAll = new ArrayList<>(srcList);
 		this.srcListSuggestion = new ArrayList<>();
