@@ -2,6 +2,7 @@ package com.attendance.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -16,19 +17,19 @@ import com.attendance.activities.ViewDetailsActivity;
 import com.attendance.data_models.ClassData;
 import com.attendance.fragments.ClassDetailsFragment;
 import com.attendance.fragments.ClassDialogFragment;
+import com.attendance.fragments.TeacherDetailsFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditClassDetailsAdapter extends RecyclerView.Adapter<
 		EditClassDetailsAdapter.MyViewHolder> {
 
 	private ArrayList<ClassData > dataList;
 	private Context context;
-	private ClassDetailsFragment fragment;
 
-	public EditClassDetailsAdapter(Context context, ClassDetailsFragment fragment, ArrayList< ClassData > data) {
+	public EditClassDetailsAdapter(Context context, ArrayList< ClassData > data) {
 		this.context = context;
-		this.fragment = fragment;
 		dataList = data;
 	}
 
@@ -47,13 +48,22 @@ public class EditClassDetailsAdapter extends RecyclerView.Adapter<
 		holder.btnEdit.setOnClickListener(v -> {
 			RowData data = new RowData();
 			FragmentManager manager = ((ViewDetailsActivity)context).getSupportFragmentManager();
-			ClassDialogFragment dialogFragment = new ClassDialogFragment();
-			dialogFragment.setTargetFragment(fragment, 1);
-			dialogFragment.show(manager, ClassDialogFragment.TAG);
-			data.setCourseName(holder.tvCourseName.getText().toString());
-			data.setSemester(holder.tvSemester.getText().toString());
-			data.setPosition(String.valueOf(i));
-			dialogFragment.rowData(data);
+			List<Fragment> fragList = manager.getFragments();
+			ClassDetailsFragment fragment = null;
+			for ( Fragment frag : fragList ) {
+				if (frag instanceof ClassDetailsFragment) {
+					fragment = (ClassDetailsFragment) frag;
+				}
+			}
+			if (fragment != null) {
+				ClassDialogFragment dialogFragment = new ClassDialogFragment();
+				dialogFragment.setTargetFragment(fragment, 2);
+				dialogFragment.show(manager, ClassDialogFragment.TAG);
+				data.setCourseName(holder.tvCourseName.getText().toString());
+				data.setSemester(holder.tvSemester.getText().toString());
+				data.setPosition(String.valueOf(i));
+				dialogFragment.rowClassData(data);
+			}
 		});
 	}
 
@@ -87,19 +97,19 @@ public class EditClassDetailsAdapter extends RecyclerView.Adapter<
 			return semester;
 		}
 
-		public void setCourseName(String courseName) {
-			this.courseName = courseName;
-		}
-
-		public void setSemester(String semester) {
-			this.semester = semester;
-		}
-
 		public String getPosition() {
 			return position;
 		}
 
-		public void setPosition(String position) {
+		void setCourseName(String courseName) {
+			this.courseName = courseName;
+		}
+
+		void setSemester(String semester) {
+			this.semester = semester;
+		}
+
+		void setPosition(String position) {
 			this.position = position;
 		}
 	}

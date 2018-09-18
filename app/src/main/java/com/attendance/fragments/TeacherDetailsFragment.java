@@ -42,14 +42,17 @@ public class TeacherDetailsFragment extends Fragment {
 		layoutManager = new LinearLayoutManager(activity);
 		recyclerView.setLayoutManager(layoutManager);
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
+		updateAdapter();
+		return view;
+	}
 
+	public void updateAdapter() {
 		if ( !dbHelper.getTeacherData().isEmpty() ) {
 			dataList.clear();
 			dataList.addAll(dbHelper.getTeacherData());
 			adapter = new EditTeacherDetailsAdapter(activity, dataList);
 			recyclerView.setAdapter(adapter);
 		}
-		return view;
 	}
 
 	@Override

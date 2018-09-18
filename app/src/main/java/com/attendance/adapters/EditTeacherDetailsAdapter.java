@@ -3,6 +3,7 @@ package com.attendance.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -15,9 +16,12 @@ import android.widget.Toast;
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
 import com.attendance.data_models.TeacherData;
+import com.attendance.fragments.StudentDetailsFragment;
+import com.attendance.fragments.TeacherDetailsFragment;
 import com.attendance.fragments.TeacherDialogFragment;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class EditTeacherDetailsAdapter extends RecyclerView.Adapter<
 		EditTeacherDetailsAdapter.MyViewHolder> {
@@ -44,8 +48,22 @@ public class EditTeacherDetailsAdapter extends RecyclerView.Adapter<
 		holder.tvCourseName.setText(dataList.get(i).getCourseName());
 		holder.btnEdit.setOnClickListener(v -> {
 			FragmentManager manager = ((ViewDetailsActivity )context).getSupportFragmentManager();
-			TeacherDialogFragment dialogFragment = new TeacherDialogFragment();
-			dialogFragment.show(manager, TeacherDialogFragment.TAG);
+			List<Fragment> fragList =  manager.getFragments();
+			TeacherDetailsFragment fragment = null;
+			for ( Fragment frag : fragList ) {
+				if (frag instanceof TeacherDetailsFragment) {
+					fragment = (TeacherDetailsFragment) frag;
+				}
+			}
+			if ( fragment != null ) {
+				RowTeacherData data = new RowTeacherData();
+				data.setTeacherName(dataList.get(i).getTeacherName());
+				data.setCourseName(dataList.get(i).getCourseName());
+				TeacherDialogFragment dialogFragment = new TeacherDialogFragment();
+				dialogFragment.setTargetFragment(fragment, 1);
+				dialogFragment.show(manager, TeacherDialogFragment.TAG);
+				dialogFragment.rowTeacherData(data);
+			}
 		});
 	}
 
@@ -63,6 +81,36 @@ public class EditTeacherDetailsAdapter extends RecyclerView.Adapter<
 			tvTeacherName = view.findViewById(R.id.tvTeacherName);
 			tvCourseName = view.findViewById(R.id.tvCourseName);
 			btnEdit = view.findViewById(R.id.btnEdit);
+		}
+	}
+
+	public class RowTeacherData {
+		private String teacherName;
+		private String courseName;
+		private String position;
+
+		public String getTeacherName() {
+			return teacherName;
+		}
+
+		void setTeacherName(String teacherName) {
+			this.teacherName = teacherName;
+		}
+
+		public String getCourseName() {
+			return courseName;
+		}
+
+		void setCourseName(String courseName) {
+			this.courseName = courseName;
+		}
+
+		public String getPosition() {
+			return position;
+		}
+
+		void setPosition(String position) {
+			this.position = position;
 		}
 	}
 

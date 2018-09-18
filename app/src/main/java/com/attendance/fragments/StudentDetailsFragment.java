@@ -44,14 +44,17 @@ public class StudentDetailsFragment extends Fragment {
 		layoutManager = new LinearLayoutManager(activity);
 		recyclerView.setLayoutManager(layoutManager);
 		recyclerView.setItemAnimator(new DefaultItemAnimator());
+		updateAdapter();
+		return view;
+	}
 
+	public void updateAdapter() {
 		if ( !dbHelper.getStudentData().isEmpty() ) {
 			dataList.clear();
 			dataList.addAll(dbHelper.getStudentData());
 			adapter = new EditStudentDetailsAdapter(activity, dataList);
 			recyclerView.setAdapter(adapter);
 		}
-		return view;
 	}
 
 
@@ -70,4 +73,5 @@ public class StudentDetailsFragment extends Fragment {
 		super.onDetach();
 		activity = null;
 	}
+
 }

@@ -50,7 +50,7 @@ public class ClassDetailsFragment extends Fragment {
 		if ( !dbHelper.getClassData().isEmpty() ) {
 			dataList.clear();
 			dataList.addAll(dbHelper.getClassData());
-			adapter = new EditClassDetailsAdapter(activity, this, dataList);
+			adapter = new EditClassDetailsAdapter(activity, dataList);
 			recyclerView.setAdapter(adapter);
 		}
 	}

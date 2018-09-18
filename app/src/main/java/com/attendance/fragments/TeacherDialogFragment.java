@@ -21,9 +21,11 @@ import android.widget.TextView;
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
 import com.attendance.adapters.CustomAdapter;
+import com.attendance.adapters.EditTeacherDetailsAdapter;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
+import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.ConstantsString;
 
 public class TeacherDialogFragment extends DialogFragment implements View.OnClickListener {
@@ -33,8 +35,10 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 	private CustomTextInputLayout til_teacherName, til_phone, til_qualification;
 	private CustomInputEditText et_teacherName, et_phone;
 	private CustomSpinner sp_qualification;
-	private EditTeacherData data;
+	private EditTeacherData teacherData;
 	private boolean isFlag = false;
+	private MyDBHelper dbHelper;
+	private RowData rowData;
 
 	public TeacherDialogFragment newInstance(ViewGroup parent) {
 		this.parent = parent;
@@ -47,7 +51,8 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View view = inflater.inflate(R.layout.teacher_dialog, parent, false);
-		data = new EditTeacherData();
+		teacherData = new EditTeacherData();
+		dbHelper = MyDBHelper.getInstance(activity);
 		setupView(view);
 		builder.setView(view);
 		return builder.create();
@@ -97,7 +102,15 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 				isFlag = true;
 				if (checkMandatoryFields()) {
 					isFlag = false;
-					dismiss();
+					if ( dbHelper.updateTeacherData(teacherData) ) {
+						TeacherDetailsFragment fragment = (TeacherDetailsFragment ) getTargetFragment();
+						if (fragment != null){
+							fragment.updateAdapter();
+							dismiss();
+						}
+					} else {
+						activity.toast("Database is not update");
+					}
 				} else {
 					isFlag = false;
 					activity.toast(getString(R.string.check_mandatory));
@@ -107,29 +120,36 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 		}
 	}
 
+	public void rowTeacherData(EditTeacherDetailsAdapter.RowTeacherData data){
+		rowData = new RowData();
+		rowData.setTeacherName(data.getTeacherName());
+		rowData.setCourseName(data.getCourseName());
+
+	}
+
 	private boolean checkMandatoryFields() {
 		int totalCount = 3;
 		int count = 0;
+		teacherData.setTeacherName(et_teacherName.toString());
+		teacherData.setPhone(et_phone.toString());
+		teacherData.setQualification(sp_qualification.toString());
+		teacherData.setRowData(rowData);
 
-		data.setTeacherName(et_teacherName.toString());
-		data.setPhone(et_phone.toString());
-		data.setQualification(sp_qualification.toString());
-
-		if ( !TextUtils.isEmpty(data.getTeacherName()) ) {
+		if ( !TextUtils.isEmpty(teacherData.getTeacherName()) ) {
 			til_teacherName.setErrorDisabled();
 			count++;
 		} else {
 			til_teacherName.setErrorMessage();
 		}
 
-		if ( !TextUtils.isEmpty(data.getPhone()) ) {
+		if ( !TextUtils.isEmpty(teacherData.getPhone()) ) {
 			til_phone.setErrorDisabled();
 			count++;
 		} else {
 			til_phone.setErrorMessage();
 		}
 
-		if ( !TextUtils.isEmpty(data.getQualification()) ) {
+		if ( !TextUtils.isEmpty(teacherData.getQualification()) ) {
 			til_qualification.setErrorDisabled();
 			count++;
 		} else {
@@ -138,16 +158,46 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 		return count != 0 && count == totalCount;
 	}
 
-	public class EditTeacherData {
+	public class RowData{
 		private String teacherName;
-		private String phone;
-		private String qualification;
+		private String courseName;
 
 		public String getTeacherName() {
 			return teacherName;
 		}
 
-		public void setTeacherName(String teacherName) {
+		void setTeacherName(String teacherName) {
+			this.teacherName = teacherName;
+		}
+
+		public String getCourseName() {
+			return courseName;
+		}
+
+		void setCourseName(String courseName) {
+			this.courseName = courseName;
+		}
+	}
+
+	public class EditTeacherData {
+		private String teacherName;
+		private String phone;
+		private String qualification;
+		private RowData rowData;
+
+		public RowData getRowData() {
+			return rowData;
+		}
+
+		void setRowData(RowData rowData) {
+			this.rowData = rowData;
+		}
+
+		public String getTeacherName() {
+			return teacherName;
+		}
+
+		void setTeacherName(String teacherName) {
 			this.teacherName = teacherName;
 		}
 
@@ -155,7 +205,7 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 			return phone;
 		}
 
-		public void setPhone(String phone) {
+		void setPhone(String phone) {
 			this.phone = phone;
 		}
 
@@ -163,7 +213,7 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 			return qualification;
 		}
 
-		public void setQualification(String qualification) {
+		void setQualification(String qualification) {
 			this.qualification = qualification;
 		}
 	}
@@ -212,4 +262,5 @@ public class TeacherDialogFragment extends DialogFragment implements View.OnClic
 		super.onDetach();
 		activity = null;
 	}
+
 }

@@ -2,10 +2,12 @@ package com.attendance.custom_classes;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.weiwangcn.betterspinner.library.material.MaterialBetterSpinner;
+
 
 public class CustomSpinner extends MaterialBetterSpinner {
 	public CustomSpinner (Context context) {
@@ -30,7 +32,7 @@ public class CustomSpinner extends MaterialBetterSpinner {
 	public void setFocusChange (CustomTextInputLayout textInputLayout) {
 		this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
 			if (!hasFocus) {
-				if ( this.getText().toString().equals("") ) {
+				if ( this.toString().equals("") ) {
 					textInputLayout.setErrorMessage();
 				}
 				else {
@@ -43,5 +45,49 @@ public class CustomSpinner extends MaterialBetterSpinner {
 	@Override
 	public String toString() {
 		return this.getText().toString().trim();
+	}
+
+	public boolean isEmpty(){
+		return !TextUtils.isEmpty(this.toString());
+	}
+
+	public boolean isFieldEmpty( CustomTextInputLayout inputLayout ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return true;
+		} else {
+			inputLayout.setErrorMessage();
+			return false;
+		}
+	}
+
+	public boolean isFieldEmpty( CustomTextInputLayout inputLayout, String msg ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return true;
+		} else {
+			inputLayout.setErrorMessage(msg);
+			return false;
+		}
+	}
+
+	public int fieldEmpty( CustomTextInputLayout inputLayout ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return 1;
+		} else {
+			inputLayout.setErrorMessage();
+			return 0;
+		}
+	}
+
+	public int fieldEmpty( CustomTextInputLayout inputLayout, String msg ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return 1;
+		} else {
+			inputLayout.setErrorMessage(msg);
+			return 0;
+		}
 	}
 }

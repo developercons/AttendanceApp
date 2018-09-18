@@ -44,7 +44,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	private CustomTextInputLayout til_courseName,til_semester, til_teacherEmail, til_teacherName;
 	private CustomAutoCompleteTextView ac_teacherEmail;
 	private CustomInputEditText et_editCourseName, et_editSemester, et_teacherName;
-	private EditClassData data;
+	private EditClassData classData;
 	private RowData rowData;
 	private MyDBHelper dbHelper;
 	private boolean isFlag = false;
@@ -62,7 +62,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View view = inflater.inflate(R.layout.class_dialog, parent, false);
-		data = new EditClassData();
+		classData = new EditClassData();
 		dbHelper = MyDBHelper.getInstance(activity);
 		setupView(view);
 		builder.setView(view);
@@ -128,16 +128,16 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 				isFlag = true;
 				if ( checkMandatoryFields() ) {
 					isFlag = false;
-					if ( dbHelper.updateClassData(data) ) {
-						ClassDetailsFragment fragment = (ClassDetailsFragment ) getTargetFragment();
-						if (fragment != null){
-							fragment.updateAdapter();
-						}
-						dismiss();
-					}
-					else {
-						activity.toast("Database is not update");
-					}
+                    if ( dbHelper.updateClassData(classData) ) {
+                        ClassDetailsFragment fragment = (ClassDetailsFragment ) getTargetFragment();
+                        if (fragment != null){
+                            fragment.updateAdapter();
+                            dismiss();
+                        }
+                    }
+                    else {
+                        activity.toast("Database is not update");
+                    }
 				}
 				else {
 					isFlag = false;
@@ -150,19 +150,19 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 	public boolean checkMandatoryFields() {
 		int totalCount = 2;
 		int count = 0;
-		data.setTeacherEmailId(ac_teacherEmail.toString());
-		data.setTeacherName(et_teacherName.toString());
-		data.setRowData(rowData);
+		classData.setTeacherEmailId(ac_teacherEmail.toString());
+		classData.setTeacherName(et_teacherName.toString());
+		classData.setRowData(rowData);
 
-		if (!TextUtils.isEmpty(data.getTeacherEmailId())
-				&& data.getTeacherEmailId().matches(ac_teacherEmail.emailPattern)) {
+		if (!TextUtils.isEmpty(classData.getTeacherEmailId())
+				&& classData.getTeacherEmailId().matches(ac_teacherEmail.emailPattern)) {
 			til_teacherEmail.setErrorDisabled();
 			count++;
 		} else {
 			til_teacherEmail.setErrorMessage();
 		}
 
-		if (!TextUtils.isEmpty(data.getTeacherName())) {
+		if (!TextUtils.isEmpty(classData.getTeacherName())) {
 			til_teacherName.setErrorDisabled();
 			count++;
 		} else {
@@ -171,7 +171,7 @@ public class ClassDialogFragment extends DialogFragment implements View.OnClickL
 		return count != 0 && count == totalCount;
 	}
 
-	public void rowData(EditClassDetailsAdapter.RowData data) {
+	public void rowClassData(EditClassDetailsAdapter.RowData data) {
 		rowData = new RowData();
 		rowData.setCourseName(data.getCourseName());
 		rowData.setSemester(data.getSemester());

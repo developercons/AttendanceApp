@@ -3,6 +3,7 @@ package com.attendance.custom_classes;
 import android.content.Context;
 import android.graphics.Color;
 import android.support.design.widget.TextInputEditText;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.View;
@@ -50,7 +51,7 @@ public class CustomInputEditText extends TextInputEditText {
     public void setFocusChange (CustomTextInputLayout textInputLayout) {
         this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
             if (!hasFocus) {
-                if ( this.getText().toString().equals("") ) {
+                if ( this.toString().equals("") ) {
                     textInputLayout.setErrorMessage();
                 }
                 else {
@@ -63,7 +64,7 @@ public class CustomInputEditText extends TextInputEditText {
 	public void setFocusChange (CustomTextInputLayout textInputLayout, String msg, int length)  {
         this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
             if (!hasFocus) {
-                if ( this.getText().toString().length() != length ) {
+                if ( this.toString().length() != length ) {
                     textInputLayout.setErrorMessage(msg);
                 }
                 else {
@@ -76,8 +77,7 @@ public class CustomInputEditText extends TextInputEditText {
     public void setFocusChangeMobileNo (CustomTextInputLayout textInputLayout) {
         this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
             if ( !hasFocus ) {
-                String _mobile = this.getText().toString();
-                if (!_mobile.matches(phoneExpression)) {
+                if (!this.toString().matches(phoneExpression)) {
                     textInputLayout.setErrorMessage("Please Enter Valid Phone No.");
                 } else{
                     textInputLayout.setErrorEnabled(false);
@@ -89,8 +89,7 @@ public class CustomInputEditText extends TextInputEditText {
 	public void setFocusChangeEmailId (CustomTextInputLayout textInputLayout) {
 		this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
 			if ( !hasFocus ) {
-				String _text = this.getText().toString();
-				if ( !_text.matches(emailPattern) ) {
+				if ( !this.toString().matches(emailPattern) ) {
 					textInputLayout.setErrorMessage("Please enter valid email id");
 				}
 				else {
@@ -100,11 +99,54 @@ public class CustomInputEditText extends TextInputEditText {
 		});
 	}
 
+    @Override
+    public String toString() {
+        return this.getText().toString().trim();
+    }
 
-	@Override
-	public String toString() {
-		return this.getText().toString().trim();
-	}
+    public boolean isEmpty(){
+        return !TextUtils.isEmpty(this.toString());
+    }
+
+    public boolean isFieldEmpty( CustomTextInputLayout inputLayout ) {
+        if ( !TextUtils.isEmpty(this.toString()) ) {
+            inputLayout.setErrorDisabled();
+            return true;
+        } else {
+            inputLayout.setErrorMessage();
+            return false;
+        }
+    }
+
+    public boolean isFieldEmpty( CustomTextInputLayout inputLayout, String msg ) {
+        if ( !TextUtils.isEmpty(this.toString()) ) {
+            inputLayout.setErrorDisabled();
+            return true;
+        } else {
+            inputLayout.setErrorMessage(msg);
+            return false;
+        }
+    }
+
+    public int fieldEmpty( CustomTextInputLayout inputLayout ) {
+        if ( !TextUtils.isEmpty(this.toString()) ) {
+            inputLayout.setErrorDisabled();
+            return 1;
+        } else {
+            inputLayout.setErrorMessage();
+            return 0;
+        }
+    }
+
+    public int fieldEmpty( CustomTextInputLayout inputLayout, String msg ) {
+        if ( !TextUtils.isEmpty(this.toString()) ) {
+            inputLayout.setErrorDisabled();
+            return 1;
+        } else {
+            inputLayout.setErrorMessage(msg);
+            return 0;
+        }
+    }
 }
 
 

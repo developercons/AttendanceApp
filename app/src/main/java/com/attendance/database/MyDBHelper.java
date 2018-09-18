@@ -14,6 +14,8 @@ import com.attendance.data_models.TeacherData;
 import com.attendance.fragments.AddClassFragment;
 import com.attendance.fragments.AddStudentFragment;
 import com.attendance.fragments.AddTeacherFragment;
+import com.attendance.fragments.StudentDialogFragment;
+import com.attendance.fragments.TeacherDialogFragment;
 import com.attendance.fragments.TeacherLoginFragment;
 import com.attendance.fragments.ClassDialogFragment;
 import com.google.gson.Gson;
@@ -320,10 +322,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		    String[] _colToReturn = {"*"};
 		    Cursor cursor = db.query(TEACHER_TABLE_NAME, _colToReturn, _selection,
 				    _selectionToArgs, null, null, null);
-
-//		    Cursor cursor = null;
-//		    String query = "SELECT * FROM " + TEACHER_TABLE_NAME + " WHERE " + TEACHER_EMAIL_ID + "=?";
-//		    cursor = db.rawQuery(query, new String[] {data._email});
 		    if ( cursor.getCount() > 0 ) {
 			    cursor.close();
 			    return false;
@@ -363,6 +361,54 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	    }
 	    return dataList;
 	}
+
+	public boolean updateTeacherData(TeacherDialogFragment.EditTeacherData data) {
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			String _selection = CLASS_TEACHER_NAME + " = ? AND " + CLASS_COURSE_NAME + " = ?" ;
+			String[] _selectionToArgs = { data.getRowData().getTeacherName(),
+					                     data.getRowData().getCourseName() };
+			String[] _colToReturn = {CLASS_TEACHER_NAME, CLASS_TEACHER_EMAIL_ID};
+			Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, _selection,
+					_selectionToArgs, null, null, null);
+			if ( cursor.getCount() > 0 ) {
+				cursor.moveToFirst();
+				String _teacherName = getString(cursor, CLASS_TEACHER_NAME);
+				String _teacherEmailId = getString(cursor, CLASS_TEACHER_EMAIL_ID);
+
+				if (!TextUtils.isEmpty(_teacherName) &&
+						!TextUtils.isEmpty(_teacherEmailId)) {
+					String selection = TEACHER_EMAIL_ID + " = ? ";
+					String[] args = {_teacherEmailId};
+					String[] returnCol = {TEACHER_EMAIL_ID};
+					Cursor res = db.query(TEACHER_TABLE_NAME, returnCol, selection, args,
+							null, null, null);
+					if ( res.getCount() > 0 ) {
+						ContentValues values = new ContentValues();
+						values.put(TEACHER_NAME, data.getTeacherName());
+						values.put(TEACHER_MOBILE_NUMBER, data.getPhone());
+						values.put(TEACHER_QUALIFICATION, data.getQualification());
+						db.update(TEACHER_TABLE_NAME, values, selection, args);
+
+						ContentValues classValues = new ContentValues();
+						classValues.put(CLASS_TEACHER_NAME, data.getTeacherName());
+						db.update(CLASS_TABLE_NAME, classValues, _selection, _selectionToArgs);
+						res.close();
+						return true;
+					}
+				}
+				cursor.close();
+				return false;
+			} else {
+				cursor.close();
+				return false;
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return false;
+	}
+
 	public boolean checkTeacherEmail(TeacherLoginFragment.TeacherLoginData data) {
 
 		SQLiteDatabase db = this.getReadableDatabase();
@@ -534,6 +580,33 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		return false;
 	}
 
+	public boolean updateStudentData(StudentDialogFragment.EditStudentData data) {
+		try {
+			SQLiteDatabase db = this.getWritableDatabase();
+			String _selection = STUDENT_EMAIL_ID + " = ? ";
+			String[] _selectionToArgs = {data.getStudentData().getStudentEmailId()};
+			String[] _colToReturn = {STUDENT_EMAIL_ID};
+			Cursor cursor = db.query(STUDENT_TABLE_NAME, _colToReturn, _selection,
+					_selectionToArgs, null, null, null);
+			if ( cursor.getCount() > 0 ) {
+				cursor.moveToFirst();
+				ContentValues values =  new ContentValues();
+				values.put(STUDENT_NAME, data.getStudentName());
+				values.put(STUDENT_CLASS, data.getStudentCourseName());
+				values.put(STUDENT_MOBILE_NO, data.getStudentPhone());
+				db.update(STUDENT_TABLE_NAME, values, _selection, _selectionToArgs);
+				cursor.close();
+				return true;
+			} else {
+				cursor.close();
+				return false;
+			}
+		} catch ( Exception e ) {
+			e.getMessage();
+		}
+		return false;
+	}
+
     public ArrayList<String> getStudentList(String courseName) {
         SQLiteDatabase db = this.getReadableDatabase();
         ArrayList<String> studentList = new ArrayList<>();
@@ -560,7 +633,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		ArrayList<StudentData> dataList = new ArrayList<>();
 		SQLiteDatabase db = this.getReadableDatabase();
 		try {
-			String[] _colToReturn = {STUDENT_NAME, STUDENT_CLASS};
+			String[] _colToReturn = {STUDENT_NAME, STUDENT_CLASS, STUDENT_EMAIL_ID};
 			Cursor cursor = db.query(STUDENT_TABLE_NAME, _colToReturn, null,
 					null, null, null, null);
 			if ( cursor.getCount() > 0 ) {
@@ -569,6 +642,7 @@ public class MyDBHelper extends SQLiteOpenHelper {
 					StudentData data = new StudentData();
 					data.setStudentName(getString(cursor, STUDENT_NAME));
 					data.setClassName(getString(cursor, STUDENT_CLASS));
+					data.setStudentEmailId(getString(cursor, STUDENT_EMAIL_ID));
 					dataList.add(data);
 					cursor.moveToNext();
 				}

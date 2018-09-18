@@ -21,9 +21,11 @@ import android.widget.TextView;
 import com.attendance.R;
 import com.attendance.activities.ViewDetailsActivity;
 import com.attendance.adapters.CustomAdapter;
+import com.attendance.adapters.EditStudentDetailsAdapter;
 import com.attendance.custom_classes.CustomInputEditText;
 import com.attendance.custom_classes.CustomSpinner;
 import com.attendance.custom_classes.CustomTextInputLayout;
+import com.attendance.database.MyDBHelper;
 import com.attendance.helper_classes.ConstantsString;
 
 public class StudentDialogFragment extends DialogFragment implements View.OnClickListener {
@@ -31,11 +33,13 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 	public static final String TAG = "STUDENT_DETAILS_UPDATE";
 	private ViewDetailsActivity activity;
 	private ViewGroup parent;
-	private CustomTextInputLayout til_studentName, til_class, til_phone, til_email;
-	private CustomInputEditText et_studentName, et_phone, et_email;
+	private CustomTextInputLayout til_studentName, til_class, til_phone;
+	private CustomInputEditText et_studentName, et_phone;
 	private CustomSpinner sp_course;
-	private EditStudentData data;
 	private boolean isFlags = false;
+	private EditStudentData studentData;
+	private MyDBHelper dbHelper;
+	private StudentRowData rowData;
 
 	public StudentDialogFragment newInstance(ViewGroup parent) {
 		this.parent = parent;
@@ -47,41 +51,37 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 		LayoutInflater inflater = LayoutInflater.from(activity);
-		View view = inflater.inflate(R.layout.fragment_add_student, parent, false);
-		data = new EditStudentData();
+		View view = inflater.inflate(R.layout.student_dialog, parent, false);
+		studentData = new EditStudentData();
+		dbHelper = MyDBHelper.getInstance(activity);
 		setupView(view);
 		builder.setView(view);
 		return builder.create();
 	}
 
 	private void setupView(View view) {
-		til_studentName = view.findViewById(R.id.til_studentName);
-		til_class = view.findViewById(R.id.til_class);
-		til_phone = view.findViewById(R.id.til_phone);
-		til_email = view.findViewById(R.id.til_email);
+		til_studentName = view.findViewById(R.id.til_editStudentName);
+		til_class = view.findViewById(R.id.til_editClass);
+		til_phone = view.findViewById(R.id.til_editPhone);
 
-		et_studentName = view.findViewById(R.id.et_studentName);
-		et_phone = view.findViewById(R.id.et_phone);
-		et_email = view.findViewById(R.id.et_email);
-		sp_course = view.findViewById(R.id.sp_course);
+		et_studentName = view.findViewById(R.id.et_editStudentName);
+		et_phone = view.findViewById(R.id.et_editPhone);
+		sp_course = view.findViewById(R.id.sp_editCourse);
 
 		//todo: implements set on focus change listener
 		et_studentName.setFocusChange(til_studentName);
 		et_phone.setFocusChangeMobileNo(til_phone);
-		et_email.setFocusChangeEmailId(til_email);
 		sp_course.setFocusChange(til_class);
 
 		//todo: implements textWatcher on fields
 		et_studentName.addTextChangedListener(textWatcher);
 		et_phone.addTextChangedListener(textWatcher);
-		et_email.addTextChangedListener(textWatcher);
 		sp_course.addTextChangedListener(textWatcher);
 
 		TextView tvBack = view.findViewById(R.id.tvStudentBack);
-		Button btnSubmit = view.findViewById(R.id.btn_submit);
+		Button btnSubmit = view.findViewById(R.id.btn_editSubmit);
 
 		//todo: implement Se on click listener
-		tvBack.setVisibility(View.VISIBLE);
 		tvBack.setOnClickListener(this);
 		btnSubmit.setOnClickListener(this);
 
@@ -96,11 +96,19 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 				dismiss();
 				break;
 
-			case R.id.btn_submit:
+			case R.id.btn_editSubmit:
 				isFlags = true;
 				if ( checkMandatoryFields() ) {
 					isFlags = false;
-					dismiss();
+					if (dbHelper.updateStudentData(studentData)) {
+						StudentDetailsFragment fragment = (StudentDetailsFragment ) getTargetFragment();
+						if (fragment != null){
+							fragment.updateAdapter();
+							dismiss();
+						}
+					} else {
+						activity.toast("Database is not update");
+					}
 				} else {
 					isFlags = false;
 					activity.toast(getString(R.string.check_mandatory));
@@ -111,39 +119,31 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 
 	private boolean checkMandatoryFields() {
 		int count = 0;
-		int totalCount = 4;
+		int totalCount = 3;
 
-		data.setStudentName(et_studentName.toString());
-		data.setStudentPhone(et_phone.toString());
-		data.setStudentEmail(et_email.toString());
-		data.setStudentCourseName(sp_course.toString());
+		studentData.setStudentName(et_studentName.toString());
+		studentData.setStudentPhone(et_phone.toString());
+		studentData.setStudentCourseName(sp_course.toString());
+		studentData.setStudentData(rowData);
 
-		if ( !TextUtils.isEmpty(data.getStudentName()) ) {
-			til_studentName.setDisabled();
+		if ( !TextUtils.isEmpty(studentData.getStudentName()) ) {
+			til_studentName.setErrorDisabled();
 			count++;
 		}
 		else {
 			til_studentName.setErrorMessage();
 		}
 
-		if ( !TextUtils.isEmpty(data.getStudentPhone()) ) {
-			til_phone.setDisabled();
+		if ( !TextUtils.isEmpty(studentData.getStudentPhone()) ) {
+			til_phone.setErrorDisabled();
 			count++;
 		}
 		else {
 			til_phone.setErrorMessage();
 		}
 
-		if ( !TextUtils.isEmpty(data.getStudentEmail()) ) {
-			til_email.setDisabled();
-			count++;
-		}
-		else {
-			til_email.setErrorMessage();
-		}
-
-		if ( !TextUtils.isEmpty(data.getStudentCourseName()) ) {
-			til_class.setDisabled();
+		if ( !TextUtils.isEmpty(studentData.getStudentCourseName()) ) {
+			til_class.setErrorDisabled();
 			count++;
 		}
 		else {
@@ -152,11 +152,56 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 		return count != 0 && count == totalCount;
 	}
 
+	public void rowData(EditStudentDetailsAdapter.RowStudentData data) {
+		rowData = new StudentRowData();
+		rowData.setStudentName(data.getStudentName());
+		rowData.setClassName(data.getClassName());
+		rowData.setStudentEmailId(data.getStudentEmailId());
+	}
+
 	public class EditStudentData {
 		private String studentName;
 		private String studentPhone;
-		private String studentEmail;
 		private String studentCourseName;
+		private StudentRowData data;
+
+		public String getStudentName() {
+			return studentName;
+		}
+
+		void setStudentName(String studentName) {
+			this.studentName = studentName;
+		}
+
+		public String getStudentPhone() {
+			return studentPhone;
+		}
+
+		void setStudentPhone(String studentPhone) {
+			this.studentPhone = studentPhone;
+		}
+
+		public String getStudentCourseName() {
+			return studentCourseName;
+		}
+
+		void setStudentCourseName(String studentCourseName) {
+			this.studentCourseName = studentCourseName;
+		}
+
+		public StudentRowData getStudentData() {
+			return data;
+		}
+
+		void setStudentData(StudentRowData data) {
+			this.data = data;
+		}
+	}
+
+	public class StudentRowData {
+		private String studentName;
+		private String className;
+		private String studentEmailId;
 
 		public String getStudentName() {
 			return studentName;
@@ -166,28 +211,20 @@ public class StudentDialogFragment extends DialogFragment implements View.OnClic
 			this.studentName = studentName;
 		}
 
-		public String getStudentPhone() {
-			return studentPhone;
+		public String getClassName() {
+			return className;
 		}
 
-		public void setStudentPhone(String studentPhone) {
-			this.studentPhone = studentPhone;
+		public void setClassName(String className) {
+			this.className = className;
 		}
 
-		public String getStudentEmail() {
-			return studentEmail;
+		public String getStudentEmailId() {
+			return studentEmailId;
 		}
 
-		public void setStudentEmail(String studentEmail) {
-			this.studentEmail = studentEmail;
-		}
-
-		public String getStudentCourseName() {
-			return studentCourseName;
-		}
-
-		public void setStudentCourseName(String studentCourseName) {
-			this.studentCourseName = studentCourseName;
+		public void setStudentEmailId(String studentEmailId) {
+			this.studentEmailId = studentEmailId;
 		}
 	}
 

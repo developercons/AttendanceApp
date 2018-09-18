@@ -2,6 +2,7 @@ package com.attendance.custom_classes;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -35,7 +36,7 @@ public class CustomAutoCompleteTextView extends android.support.v7.widget.AppCom
 	public void setFocusChange (CustomTextInputLayout textInputLayout) {
 		this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
 			if (!hasFocus) {
-				if ( this.getText().toString().equals("") ) {
+				if ( this.toString().equals("") ) {
 					textInputLayout.setErrorMessage();
 				}
 				else {
@@ -48,12 +49,10 @@ public class CustomAutoCompleteTextView extends android.support.v7.widget.AppCom
 	public void setFocusChangeEmailId (CustomTextInputLayout textInputLayout) {
 		this.setOnFocusChangeListener((View v, boolean hasFocus) -> {
 			if ( !hasFocus ) {
-				String _text = this.getText().toString();
-				if ( !_text.matches(emailPattern) ) {
-					textInputLayout.setErrorMessage("Please enter valid email id");
-				}
-				else {
-					textInputLayout.setErrorEnabled(false);
+				if (!this.toString().matches(emailPattern)) {
+					textInputLayout.setErrorMessage("Please enter valid Email Id");
+				} else {
+					textInputLayout.setErrorDisabled();
 				}
 			}
 		});
@@ -62,5 +61,49 @@ public class CustomAutoCompleteTextView extends android.support.v7.widget.AppCom
 	@Override
 	public String toString() {
 		return this.getText().toString();
+	}
+
+	public boolean isFieldEmpty( CustomTextInputLayout inputLayout ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return true;
+		} else {
+			inputLayout.setErrorMessage();
+			return false;
+		}
+	}
+
+	public boolean isEmpty(){
+		return !TextUtils.isEmpty(this.toString());
+	}
+
+	public boolean isFieldEmpty( CustomTextInputLayout inputLayout, String msg ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return true;
+		} else {
+			inputLayout.setErrorMessage(msg);
+			return false;
+		}
+	}
+
+	public int fieldEmpty( CustomTextInputLayout inputLayout ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return 1;
+		} else {
+			inputLayout.setErrorMessage();
+			return 0;
+		}
+	}
+
+	public int fieldEmpty( CustomTextInputLayout inputLayout, String msg ) {
+		if ( !TextUtils.isEmpty(this.toString()) ) {
+			inputLayout.setErrorDisabled();
+			return 1;
+		} else {
+			inputLayout.setErrorMessage(msg);
+			return 0;
+		}
 	}
 }
