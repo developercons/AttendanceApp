@@ -154,8 +154,7 @@ public class TeacherLoginFragment extends Fragment implements View.OnClickListen
                         startActivity(intent);
                         getActivity().finish();
                     } else {
-                        ConstantsString.showAlertDialog(getActivity(), "Teacher does not exits.Please " +
-		                        "Enter Valid Email Address");
+                        ConstantsString.showAlertDialog(getActivity(), "Invalid Email Id or Password");
                     }
                 }
                 break;

@@ -77,4 +77,6 @@
     <string name="_4_present">4. Present</string>
     <string name="report">Report</string>
 
+    <string name="list_empty">List is Empty</string>
+
 </resources>

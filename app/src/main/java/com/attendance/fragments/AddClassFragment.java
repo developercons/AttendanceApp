@@ -200,7 +200,7 @@ public class AddClassFragment extends Fragment implements View.OnClickListener {
                         setFieldsEmpty();
                         ConstantsString.showAlertDialog(getActivity(), "Data Inserted");
                     } else {
-                        ConstantsString.showAlertDialog(getActivity(), "Data Insertion Failed");
+                        ConstantsString.showAlertDialog(getActivity(), "Same Course and Semester already exists in table");
                     }
                 }
                 break;

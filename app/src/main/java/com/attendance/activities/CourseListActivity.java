@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.TextView;
 
 import com.attendance.R;
 import com.attendance.adapters.CourseListAdapter;
@@ -17,6 +19,7 @@ public class CourseListActivity extends AppCompatActivity {
     MyDBHelper dbHelper;
     private ArrayList<String> courseList = new ArrayList<>();
     String teacherEmail;
+    TextView tv_emptyList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +34,18 @@ public class CourseListActivity extends AppCompatActivity {
         setUpRecyclerView();
 
         if(!dbHelper.getCourseList(teacherEmail).isEmpty()) {
+            tv_emptyList.setVisibility(View.GONE);
             courseList.clear();
             courseList.addAll(dbHelper.getCourseList(teacherEmail));
             RecyclerView.Adapter adapter = new CourseListAdapter(this, courseList);
             recyclerView.setAdapter(adapter);
+        } else {
+            tv_emptyList.setVisibility(View.VISIBLE);
         }
     }
 
     private void initViews() {
+        tv_emptyList = (TextView) findViewById(R.id.tv_emptyList);
         recyclerView = (RecyclerView) findViewById(R.id.rcvCourseList);
     }
 

@@ -7,6 +7,7 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Gravity;
+import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
@@ -36,6 +37,7 @@ public class DailyAttendanceActivity extends AppCompatActivity {
     int lateCounter = 0;
     int total = 0;
     int year, month, day;
+    TextView tv_emptyList;
 
     public class AttendanceData {
         public String course;
@@ -66,10 +68,13 @@ public class DailyAttendanceActivity extends AppCompatActivity {
         setUpRecyclerView();
 
         if(!dbHelper.getStudentList(courseName).isEmpty()) {
+            tv_emptyList.setVisibility(View.GONE);
             studentList.clear();
             studentList.addAll(dbHelper.getStudentList(courseName));
             RecyclerView.Adapter adapter = new AttendanceListAdapter(this, studentList);
             recyclerView.setAdapter(adapter);
+        } else {
+            tv_emptyList.setVisibility(View.VISIBLE);
         }
 
         btn_submit.setOnClickListener(v -> {
@@ -102,8 +107,9 @@ public class DailyAttendanceActivity extends AppCompatActivity {
     }
 
     private void initViews() {
-        recyclerView = findViewById(R.id.recyclerView);
-        btn_submit = findViewById(R.id.btn_submit);
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        btn_submit = (Button) findViewById(R.id.btn_submit);
+        tv_emptyList = (TextView) findViewById(R.id.tv_emptyList);
     }
 
     private void setUpRecyclerView() {

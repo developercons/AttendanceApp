@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
 import com.attendance.activities.DailyAttendanceActivity;
+import com.attendance.data_models.Attendance;
 import com.attendance.data_models.ClassData;
 import com.attendance.data_models.Student;
 import com.attendance.data_models.StudentData;
@@ -418,24 +419,25 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	}
 
 	public boolean checkTeacherEmail(TeacherLoginFragment.TeacherLoginData data) {
-    	try {
-		    SQLiteDatabase db = this.getReadableDatabase();
-		    String selection = TEACHER_EMAIL_ID + "=?";
-		    String[] selectionArgs = {data._email};
-		    String[] colToReturn = {"*"};
-		    Cursor cursor = db.query(TEACHER_TABLE_NAME, colToReturn,  selection, selectionArgs,
-				    null, null, null);
-		    if ( cursor.getCount() > 0 ) {
-			    cursor.close();
-			    return true;
-		    } else {
-			    cursor.close();
-			    return false;
-		    }
-	    } catch ( Exception e ) {
-    		e.getMessage();
-	    }
-	    return false;
+
+		SQLiteDatabase db = this.getReadableDatabase();
+//		Cursor cursor = null;
+//		String query = "SELECT * FROM "+TEACHER_TABLE_NAME+" WHERE " + TEACHER_EMAIL_ID +"=? AND" + TEA;
+//		cursor= db.rawQuery(query,new String[]{data._email});
+
+        String _selection = TEACHER_EMAIL_ID + " = ? AND " + TEACHER_PASSWORD + " = ?" ;
+        String[] _selectionToArgs = {data._email, data._password};
+        String[] _colToReturn = {"*"};
+        Cursor cursor = db.query(TEACHER_TABLE_NAME, _colToReturn, _selection,
+                _selectionToArgs, null, null, null);
+
+		if(cursor.getCount() > 0) {
+			cursor.close();
+			return true;
+		} else {
+			cursor.close();
+			return false;
+		}
 	}
 
 	public ArrayList<Teacher> getTeacherEmail() {
@@ -471,8 +473,21 @@ public class MyDBHelper extends SQLiteOpenHelper {
 			contentValues.put(CLASS_SEMESTER, data.semester);
 			contentValues.put(CLASS_TEACHER_NAME, data.teacherName);
 			contentValues.put(CLASS_TEACHER_EMAIL_ID, data.teacherEmail);
-			db.insert(CLASS_TABLE_NAME, null, contentValues);
-			return true;
+
+			String _selection = CLASS_COURSE_NAME + " = ? AND " + CLASS_SEMESTER + " = ?" ;
+			String[] _selectionToArgs = {data.courseName, data.semester};
+			String[] _colToReturn = {"*"};
+			Cursor cursor = db.query(CLASS_TABLE_NAME, _colToReturn, _selection,
+					_selectionToArgs, null, null, null);
+			if ( cursor.getCount() > 0 ) {
+				cursor.close();
+				return false;
+			}
+			else {
+				db.insert(CLASS_TABLE_NAME, null, contentValues);
+				cursor.close();
+				return true;
+			}
 		} catch ( Exception e ) {
 			e.getMessage();
 		}
@@ -720,6 +735,35 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		                                                        report){
     	ArrayList<String> list = new ArrayList<>();
     	return list;
+    }
+
+    public ArrayList<Attendance> getCourseSpecificStudentData() {
+        ArrayList<Attendance> attendanceArrayList = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        try {
+            String _selection = ATTENDANCE_STUDENT_STATUS + " IN(?,?) AND " + ATTENDANCE_CLASS_NAME + "=?";
+            String[] _selectionToArgs = {"Present", "Late", "2D-Design"};
+            String[] _colToReturn = {ATTENDANCE_STUDENT_EMAIL_ID, ATTENDANCE_STUDENT_NAME, "count(*)"};
+            Cursor cursor = db.query(ATTENDANCE_TABLE_NAME, _colToReturn, _selection,
+                    _selectionToArgs, ATTENDANCE_STUDENT_EMAIL_ID, null, null);
+
+            if ( cursor.getCount() > 0 ) {
+                cursor.moveToFirst();
+                while ( !cursor.isAfterLast() ) {
+                    Attendance data = new Attendance();
+                    data.name = getString(cursor, ATTENDANCE_STUDENT_NAME);
+                    data.email = getString(cursor, ATTENDANCE_STUDENT_EMAIL_ID);
+                    attendanceArrayList.add(data);
+                    cursor.moveToNext();
+                }
+                cursor.close();
+                return attendanceArrayList;
+            }
+        } catch ( Exception e ) {
+            e.getMessage();
+        }
+        return attendanceArrayList;
+
     }
 
 	public String getString(Cursor cursor, String column) {
