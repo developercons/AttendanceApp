@@ -33,7 +33,7 @@
         <activity android:name=".activities.ViewDetailsActivity" />
         <activity android:name=".activities.ViewReportsActivity" />
         <activity android:name=".activities.CourseListActivity" />
-        <activity android:name=".activities.DailyAttendanceActivity"></activity>
+        <activity android:name=".activities.DailyAttendanceActivity"/>
     </application>
 
 </manifest>

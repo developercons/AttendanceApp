@@ -7,7 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.text.TextUtils;
 
+import com.attendance.activities.DailyAttendanceActivity;
 import com.attendance.data_models.ClassData;
+import com.attendance.data_models.Student;
 import com.attendance.data_models.StudentData;
 import com.attendance.data_models.Teacher;
 import com.attendance.data_models.TeacherData;
@@ -74,6 +76,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
 	private static final String ATTENDANCE_STUDENT_NAME = "studentName";
 	private static final String ATTENDANCE_STUDENT_EMAIL_ID = "studentEmailId";
 	private static final String ATTENDANCE_DATE = "attendanceDate";
+	private static final String ATTENDANCE_MONTH = "attendanceMonth";
+	private static final String ATTENDANCE_YEAR = "attendanceYear";
 	private static final String ATTENDANCE_MINIMUM_PERCENTAGE = "minimumPercentage";
 	private static final String ATTENDANCE_CLASS_NAME = "className";
 	private static final String ATTENDANCE_TOTAL_STUDENT = "totalStudent";
@@ -180,6 +184,8 @@ public class MyDBHelper extends SQLiteOpenHelper {
 			attendanceColumnList.add(ATTENDANCE_STUDENT_NAME);
 			attendanceColumnList.add(ATTENDANCE_STUDENT_EMAIL_ID);
 			attendanceColumnList.add(ATTENDANCE_DATE);
+			attendanceColumnList.add(ATTENDANCE_MONTH);
+			attendanceColumnList.add(ATTENDANCE_YEAR);
 			attendanceColumnList.add(ATTENDANCE_CLASS_NAME);
 			attendanceColumnList.add(ATTENDANCE_MINIMUM_PERCENTAGE);
 			attendanceColumnList.add(ATTENDANCE_STUDENT_STATUS);
@@ -271,7 +277,6 @@ public class MyDBHelper extends SQLiteOpenHelper {
 				db.execSQL("INSERT INTO " + TEMP_TABLE_NAME + " Select *  FROM " + TABLE_NAME);
 				//TODO: drop the old table now that your data is safe in the temporary one
 				dropTable(db, TABLE_NAME);
-
 
 				int index = 0;
 				if ( newColumnList.size() > 0 ) {
@@ -607,9 +612,9 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		return false;
 	}
 
-    public ArrayList<String> getStudentList(String courseName) {
+    public ArrayList<Student> getStudentList(String courseName) {
         SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<String> studentList = new ArrayList<>();
+        ArrayList<Student> studentList = new ArrayList<>();
         try {
             String[] _colToReturn = {"*"};
             String _selection = STUDENT_CLASS +" =?";
@@ -618,7 +623,10 @@ public class MyDBHelper extends SQLiteOpenHelper {
             if(cursor.getCount() > 0) {
                 cursor.moveToFirst();
                 while (!cursor.isAfterLast()) {
-                    studentList.add(getString(cursor, STUDENT_NAME).trim());
+                	Student student = new Student();
+                    student.studentName = getString(cursor, STUDENT_NAME).trim();
+                    student.studentEmail = getString(cursor, STUDENT_EMAIL_ID).trim();
+					studentList.add(student);
                     cursor.moveToNext();
                 }
             }
@@ -654,6 +662,27 @@ public class MyDBHelper extends SQLiteOpenHelper {
 		}
 		return dataList;
 	}
+
+    public boolean insertAttendanceData(DailyAttendanceActivity.AttendanceData data) {
+        try {
+            SQLiteDatabase db = this.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(ATTENDANCE_CLASS_NAME, data.course);
+            contentValues.put(ATTENDANCE_STUDENT_NAME, data.studentName);
+            contentValues.put(ATTENDANCE_STUDENT_EMAIL_ID, data.studentEmail);
+            contentValues.put(ATTENDANCE_STUDENT_STATUS, data.attendanceStatus);
+            contentValues.put(ATTENDANCE_TOTAL_STUDENT, data.totalStudent);
+            contentValues.put(ATTENDANCE_DATE, data.day);
+            contentValues.put(ATTENDANCE_MONTH, data.month);
+            contentValues.put(ATTENDANCE_YEAR, data.year);
+
+            db.insert(ATTENDANCE_TABLE_NAME, null, contentValues);
+            return true;
+        } catch ( Exception e ) {
+            e.getMessage();
+        }
+        return false;
+    }
 
 	public String getString(Cursor cursor, String column) {
 		try {

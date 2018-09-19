@@ -65,6 +65,7 @@
     <string name="prsent">Present</string>
     <string name="late">Late</string>
     <string name="sick">Sick</string>
+    <string name="total">Total Student</string>
     <string name="edit_student">Edit Student Details</string>
     <string name="edit_teacher_details">Edit Teacher Details</string>
 
